@@ -5,17 +5,18 @@ import (
 	"fmt"
 	"log"
 
+	"fantasy-engine/internal/models"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
-
 func NewConnection(databaseURL string) (*gorm.DB, error) {
 	if databaseURL == "" {
 		return nil, errors.New("database URL is required")
 	}
-
+	
 	db, err := gorm.Open(postgres.Open(databaseURL), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
@@ -37,4 +38,27 @@ func NewConnection(databaseURL string) (*gorm.DB, error) {
 
 	log.Println("Successfully connected to the database")
 	return db, nil
+}
+
+// AutoMigrate runs database migrations using GORM
+// This creates tables based on your model definitions
+func AutoMigrate(db *gorm.DB) error {
+	log.Println("🔄 Running database migrations...")
+
+	err := db.AutoMigrate(
+		&models.Country{},
+		&models.TeamColor{},
+		&models.Team{},
+		&models.Player{},
+		&models.GameWeek{},
+		&models.Match{},
+		&models.MatchStats{},
+	)
+
+	if err != nil {
+		return fmt.Errorf("failed to run migrations: %w", err)
+	}
+
+	log.Println("✅ Database migrations completed successfully")
+	return nil
 }
