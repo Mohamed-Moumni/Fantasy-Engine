@@ -28,11 +28,11 @@ docker-down: ## Stop Docker containers
 docker-build: ## Build Docker image
 	docker-compose build
 
-# migrate-up: ## Run database migrations up
-# 	migrate -path migrations -database "$(DATABASE_URL)" up
+migrate-up: ## Run database migrations up
+	migrate -path migrations -database "$(DATABASE_URL)" up
 
-# migrate-down: ## Run database migrations down
-# 	migrate -path migrations -database "$(DATABASE_URL)" down
+migrate-down: ## Run database migrations down
+	migrate -path migrations -database "$(DATABASE_URL)" down
 
 # lint: ## Run linter
 # 	golangci-lint run
