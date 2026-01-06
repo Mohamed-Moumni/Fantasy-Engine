@@ -7,7 +7,7 @@ import (
 
 type Team struct {
 	ID           uint      `gorm:"primaryKey"`
-	Name         string    `gorm:"not null"`
+	Name         string    `gorm:"not null:uniqueIndex"`
 	Slug         string    `gorm:"not null"`
 	ShortName    string    `gorm:"not null"`
 	Gender       string    `gorm:"not null"`
@@ -16,7 +16,7 @@ type Team struct {
 	Country      Country   `gorm:"foreignKey:countryID"`
 	TeamColorsID uint      `gorm:"not null"`
 	TeamColors   TeamColor `gorm:"foreignKey:teamColorsID"`
-	Players      []Player  `gorm:"foreignKey:TeamID"` // One-to-many relationship
+	Players      []Player  `gorm:"foreignKey:TeamID"`
 	CreatedAt    time.Time `gorm:"autoCreateTime"`
 	UpdatedAt    time.Time `gorm:"autoUpdateTime"`
 }
