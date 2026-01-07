@@ -104,3 +104,12 @@ func (s *TeamRepository) GetTeamByID(id uint) (*models.Team, error) {
 	}
 	return &team, nil
 }
+
+func (s *TeamRepository) GetAllTeams() ([]models.Team, error) {
+	var teams []models.Team
+	res := s.db.Find(&teams)
+	if res.Error != nil {
+		return []models.Team{}, fmt.Errorf("Failed to get all teams: %w", res.Error)
+	}
+	return teams, nil
+}

@@ -19,7 +19,7 @@ type Player struct {
 	CountryID               uint        `gorm:"not null;column:country"`
 	Country                 Country     `gorm:"foreignKey:CountryID"`
 	DateOfBirthTimestamp    time.Time   `gorm:"not null;type:timestamp;column:dateOfBirthTimestamp"`
-	ProposedMarketValueRaw  uint        `gorm:"not null;column:proposedMarketValueRaw"`
+	ProposedMarketValueRaw  uint        `gorm:"column:proposedMarketValueRaw"`
 	ShirtNumber             uint        `gorm:"not null;column:shirtNumber"`
 	MatchStats              []MatchStats `gorm:"foreignKey:PlayerID"` // One-to-many relationship
 	CreatedAt               time.Time   `gorm:"autoCreateTime"`

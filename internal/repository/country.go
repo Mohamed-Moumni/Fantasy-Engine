@@ -51,7 +51,17 @@ func (s *CountryRepository) GetCountryByID(id uint) (*models.Country, error) {
 
 	res := s.db.First(&country, id)
 	if res.Error != nil {
-		log.Fatalf("Country not Found with this ID: %d", id)
+		log.Printf("Country not Found with this ID: %d", id)
+		return &models.Country{}, res.Error
+	}
+	return &country, nil
+}
+func (s *CountryRepository) GetCountryByName(name string) (*models.Country, error) {
+	var country models.Country
+
+	res := s.db.First(&country, "name = ?", name)
+	if res.Error != nil {
+		log.Printf("Country not Found with this Name: %s", name)
 		return &models.Country{}, res.Error
 	}
 	return &country, nil
