@@ -63,6 +63,16 @@ func (s *TeamService) DeleteByName(name string) error {
 	return nil
 }
 
+func (s *TeamService) GetTeamByNameCode(nameCode string) (*models.Team, error) {
+	var team models.Team
+	res := s.db.Where("name_code = ?", nameCode).First(&team)
+	if res.Error != nil {
+		fmt.Errorf("Team not Found with this Name Code: %s", nameCode)
+		return &models.Team{}, res.Error
+	}
+	return &team, nil
+}
+
 func (s *TeamService) GetTeamByName(name string) (*models.Team, error) {
 	var team models.Team
 
