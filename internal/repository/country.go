@@ -1,4 +1,4 @@
-package services
+package repository
 
 import (
 	"fantasy-engine/internal/models"
@@ -10,21 +10,21 @@ import (
 
 // TODO- CREATE, UPDATE, DELETE, GET
 
-type CountryService struct {
+type CountryRepository struct {
 	db *gorm.DB
 }
 
-func NewCountryService(db *gorm.DB) *CountryService {
-	return &CountryService{db: db}
+func NewCountryRepository(db *gorm.DB) *CountryRepository {
+	return &CountryRepository{db: db}
 }
 
-func (s *CountryService) Create(country *models.Country) (*models.Country, error) {
+func (s *CountryRepository) Create(country *models.Country) (*models.Country, error) {
 	var Country models.Country
 	s.db.FirstOrCreate(&Country, *country)
 	return &Country, nil
 }
 
-func (s *CountryService) Update(country *models.Country) error {
+func (s *CountryRepository) Update(country *models.Country) error {
 	result := s.db.Save(country)
 
 	if result.Error != nil {
@@ -34,7 +34,7 @@ func (s *CountryService) Update(country *models.Country) error {
 	return nil
 }
 
-func (s *CountryService) DeleteByID(id uint) error {
+func (s *CountryRepository) DeleteByID(id uint) error {
 	var country models.Country
 	result := s.db.First(&country, id)
 
@@ -46,7 +46,7 @@ func (s *CountryService) DeleteByID(id uint) error {
 	return nil
 }
 
-func (s *CountryService) GetCountryByID(id uint) (*models.Country, error) {
+func (s *CountryRepository) GetCountryByID(id uint) (*models.Country, error) {
 	var country models.Country
 
 	res := s.db.First(&country, id)

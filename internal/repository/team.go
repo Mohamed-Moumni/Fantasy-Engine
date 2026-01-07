@@ -1,4 +1,4 @@
-package services
+package repository
 
 import (
 	"fantasy-engine/internal/models"
@@ -8,23 +8,23 @@ import (
 	"gorm.io/gorm"
 )
 
-type TeamService struct {
+type TeamRepository struct {
 	db             *gorm.DB
-	CountryService *CountryService
+	CountryService *CountryRepository
 }
 
 // -------------------------------------------  team  ----------------------------------------
 
-func NewTeamService(db *gorm.DB) *TeamService {
-	return &TeamService{
+func NewTeamService(db *gorm.DB) *TeamRepository {
+	return &TeamRepository{
 		db:             db,
-		CountryService: NewCountryService(db),
+		CountryService: NewCountryRepository(db),
 	}
 }
 
 // create - update - delete - get(team)
 
-func (s *TeamService) Create(team *models.Team) error {
+func (s *TeamRepository) Create(team *models.Team) error {
 
 	teamColor, err := s.CreateTeamColor(&team.TeamColors)
 	if err != nil {
@@ -52,7 +52,7 @@ func (s *TeamService) Create(team *models.Team) error {
 	return nil
 }
 
-func (s *TeamService) DeleteByName(name string) error {
+func (s *TeamRepository) DeleteByName(name string) error {
 	var team models.Team
 	res := s.db.Where("name = ?", name).First(&team)
 	if res.Error != nil {
@@ -63,7 +63,7 @@ func (s *TeamService) DeleteByName(name string) error {
 	return nil
 }
 
-func (s *TeamService) GetTeamByNameCode(nameCode string) (*models.Team, error) {
+func (s *TeamRepository) GetTeamByNameCode(nameCode string) (*models.Team, error) {
 	var team models.Team
 	res := s.db.Where("name_code = ?", nameCode).First(&team)
 	if res.Error != nil {
@@ -73,7 +73,7 @@ func (s *TeamService) GetTeamByNameCode(nameCode string) (*models.Team, error) {
 	return &team, nil
 }
 
-func (s *TeamService) GetTeamByName(name string) (*models.Team, error) {
+func (s *TeamRepository) GetTeamByName(name string) (*models.Team, error) {
 	var team models.Team
 
 	res := s.db.First(&team, name)
@@ -85,7 +85,7 @@ func (s *TeamService) GetTeamByName(name string) (*models.Team, error) {
 }
 
 // -------------------------------------------  team colors   ----------------------------------------
-func (s *TeamService) CreateTeamColor(teamColor *models.TeamColor) (*models.TeamColor, error) {
+func (s *TeamRepository) CreateTeamColor(teamColor *models.TeamColor) (*models.TeamColor, error) {
 	var TeamColor models.TeamColor
 	s.db.FirstOrCreate(&TeamColor, *teamColor)
 	if err := s.db.Create(teamColor).Error; err != nil {
@@ -94,7 +94,7 @@ func (s *TeamService) CreateTeamColor(teamColor *models.TeamColor) (*models.Team
 	return &TeamColor, nil
 }
 
-func (s *TeamService) GetTeamByID(id uint) (*models.Team, error) {
+func (s *TeamRepository) GetTeamByID(id uint) (*models.Team, error) {
 	var team models.Team
 
 	res := s.db.First(&team, id)

@@ -1,4 +1,4 @@
-package services
+package repository
 
 import (
 	"fantasy-engine/internal/models"
@@ -7,21 +7,21 @@ import (
 	"gorm.io/gorm"
 )
 
-type GameweekService struct {
+type GameWeekRepository struct {
 	db *gorm.DB
 }
 
-func NewGameweekService(db *gorm.DB) *GameweekService {
-	return &GameweekService{db: db}
+func NewGameweekService(db *gorm.DB) *GameWeekRepository {
+	return &GameWeekRepository{db: db}
 }
 
-func (s *GameweekService) Create(gameweek *models.GameWeek) (*models.GameWeek, error) {
+func (s *GameWeekRepository) Create(gameweek *models.GameWeek) (*models.GameWeek, error) {
 	var Gameweek models.GameWeek
 	s.db.FirstOrCreate(&Gameweek, *gameweek)
 	return &Gameweek, nil
 }
 
-func (s *GameweekService) GetByRound(round uint) (*models.GameWeek, error) {
+func (s *GameWeekRepository) GetByRound(round uint) (*models.GameWeek, error) {
 	var gameweek models.GameWeek
 	result := s.db.Where("round = ?", round).First(&gameweek)
 	if result.Error != nil {
@@ -30,7 +30,7 @@ func (s *GameweekService) GetByRound(round uint) (*models.GameWeek, error) {
 	return &gameweek, nil
 }
 
-func (s *GameweekService) Update(gameweek *models.GameWeek) error {
+func (s *GameWeekRepository) Update(gameweek *models.GameWeek) error {
 	result := s.db.Save(gameweek)
 
 	if result.Error != nil {
