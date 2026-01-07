@@ -16,6 +16,8 @@ type Match struct {
 	HomeTeam   Team           `gorm:"foreignKey:HomeTeamID"`
 	AwayTeamID uint           `gorm:"not null;column:away_team_id"`
 	AwayTeam   Team           `gorm:"foreignKey:AwayTeamID"`
+	HomeScore  uint           `gorm:"not null;default:0"`
+	AwayScore  uint           `gorm:"not null;default:0"`
 	Date       datatypes.Date `gorm:"not null;type:date"`
 	Time       datatypes.Time `gorm:"not null;type:time"`
 	Completed  bool           `gorm:"not null;default:false"`

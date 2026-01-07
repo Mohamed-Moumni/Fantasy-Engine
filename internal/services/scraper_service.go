@@ -9,6 +9,7 @@ import (
 	"os"
 )
 
+// ------------------------------------------------ SCRAP TEAMS ------------------------------- //
 func Scrap_teams() []models.Team {
 	resp, err := http.Get(os.Getenv("SCRAPER_TEAM_URL"))
 	if err != nil {
@@ -38,3 +39,8 @@ func Scrap_teams() []models.Team {
 
 	return response.Teams
 }
+
+// ------------------------------------------------ SCRAP PLAYERS ------------------------------- //
+
+
+// ------------------------------------------------ SCRAP MATCHES ------------------------------- //
