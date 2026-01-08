@@ -13,7 +13,7 @@ build: ## Build the application
 	go build -o bin/server ./cmd/server
 
 test: ## Run tests
-	go test -v -coverprofile=coverage.out ./...
+	go test -v ./...
 
 clean: ## Clean build artifacts
 	rm -rf bin/
@@ -34,8 +34,8 @@ migrate-up: ## Run database migrations up
 migrate-down: ## Run database migrations down
 	migrate -path migrations -database "$(DATABASE_URL)" down
 
-# lint: ## Run linter
-# 	golangci-lint run
+lint: ## Run linter
+	golangci-lint run
 
 mod-tidy: ## Tidy go modules
 	go mod tidy
