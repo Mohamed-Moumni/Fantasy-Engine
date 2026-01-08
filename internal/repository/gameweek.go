@@ -11,7 +11,7 @@ type GameWeekRepository struct {
 	db *gorm.DB
 }
 
-func NewGameweekService(db *gorm.DB) *GameWeekRepository {
+func NewGameWeekRepository(db *gorm.DB) *GameWeekRepository {
 	return &GameWeekRepository{db: db}
 }
 

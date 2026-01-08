@@ -12,7 +12,7 @@ type PlayerRepository struct {
 
 // -------------------------------------------  player  ----------------------------------------
 
-func NewPlayerService(db *gorm.DB) *PlayerRepository {
+func NewPlayerRepository(db *gorm.DB) *PlayerRepository {
 	return &PlayerRepository{
 		db: db,
 	}
@@ -32,3 +32,5 @@ func (s *PlayerRepository) Create(player *models.Player) (*models.Player, error)
 // func (s *PlayerService) Update(player *models.Player) (*models.Player, error) {
 
 // }
+
+

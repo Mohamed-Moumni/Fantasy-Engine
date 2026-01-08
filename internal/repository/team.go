@@ -15,7 +15,7 @@ type TeamRepository struct {
 
 // -------------------------------------------  team  ----------------------------------------
 
-func NewTeamService(db *gorm.DB) *TeamRepository {
+func NewTeamRepository(db *gorm.DB) *TeamRepository {
 	return &TeamRepository{
 		db:             db,
 		CountryService: NewCountryRepository(db),

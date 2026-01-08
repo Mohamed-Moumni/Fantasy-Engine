@@ -11,7 +11,7 @@ type MatchRepository struct {
 	db *gorm.DB
 }
 
-func NewMatchService(db *gorm.DB) *MatchRepository {
+func NewMatchRepository(db *gorm.DB) *MatchRepository {
 	return &MatchRepository{db: db}
 }
 
