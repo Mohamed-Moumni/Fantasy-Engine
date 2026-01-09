@@ -5,7 +5,6 @@ import (
 
 	"fantasy-engine/internal/config"
 	"fantasy-engine/internal/database"
-	"fantasy-engine/internal/services"
 )
 
 func main() {
