@@ -24,7 +24,6 @@ func (sc *ScoreCalculator) CalculatePlayerScore(stats models.MatchStats) int32 {
 	default:
 		return 0
 	}
-	return 0
 }
 
 func (sc *ScoreCalculator) calculateMidfielderScore(stats models.MatchStats) int32 {
@@ -152,3 +151,8 @@ func (sc *ScoreCalculator) calculateDefenderScore(stats models.MatchStats) int32
 	score -= int32(stats.OwnGoals * 2)
 	return score
 }
+
+
+// // apply the characteristics of the team on the player's score
+// func (sc *ScoreCalculator) calculateTeamLevelScore(squad ) int32 {
+// }

@@ -21,7 +21,7 @@ type Player struct {
 	DateOfBirthTimestamp    time.Time   `gorm:"not null;type:timestamp;column:dateOfBirthTimestamp"`
 	ProposedMarketValueRaw  uint        `gorm:"column:proposedMarketValueRaw"`
 	ShirtNumber             uint        `gorm:"not null;column:shirtNumber"`
-	MatchStats              []MatchStats `gorm:"foreignKey:PlayerID"` // One-to-many relationship
+	MatchStats              []MatchStats `gorm:"foreignKey:PlayerID"`
 	CreatedAt               time.Time   `gorm:"autoCreateTime"`
 	UpdatedAt               time.Time   `gorm:"autoUpdateTime"`
 }
