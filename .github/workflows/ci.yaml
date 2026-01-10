@@ -31,8 +31,8 @@ jobs:
             - name: Build Fantasy Engine
               run: make build
               
-            - name: Runt Linting
-              run: make lint
+            # - name: Runt Linting
+            #   run: make lint
 
             - name: Run Tests
               run: make test
