@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"pkg/models"
 
 	"gorm.io/driver/postgres"
@@ -11,11 +12,22 @@ import (
 	"gorm.io/gorm/logger"
 )
 
+var DB *gorm.DB
+
+func Init() {
+	db, err := NewConnection(os.Getenv("DATABASE_URL"))
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
+	DB = db
+}
+
+
 func NewConnection(databaseURL string) (*gorm.DB, error) {
 	if databaseURL == "" {
 		return nil, errors.New("database URL is required")
 	}
-	
+
 	db, err := gorm.Open(postgres.Open(databaseURL), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
@@ -45,11 +57,19 @@ func AutoMigrate(db *gorm.DB) error {
 	log.Println("🔄 Running database migrations...")
 
 	err := db.AutoMigrate(
-		&models.Country{},
-		&models.TeamColor{},
+		&models.User{},
+		&models.Squad{},
+		&models.SquadPlayer{},
 		&models.Team{},
 		&models.Player{},
+		&models.League{},
 		&models.GameWeek{},
+		&models.LeagueLeaderboard{},
+		&models.GameWeekLeagueScore{},
+		&models.GameWeekSquadScore{},
+		&models.SquadPlayer{},
+		&models.Country{},
+		&models.TeamColor{},
 		&models.Match{},
 		&models.MatchStats{},
 	)

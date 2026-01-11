@@ -1,7 +1,9 @@
 package main
 
 import (
-	"api/graph"
+	"core_api/graph"
+	"core_api/internal/config"
+	"pkg/database"
 	"log"
 	"net/http"
 	"os"
@@ -21,6 +23,14 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
+
+	config, err := config.LoadConfig()
+	if err != nil {
+		log.Fatalf("Failed to load config: %v", err)
+	}
+	log.Printf("Config: %+v", config)
+
+	database.Init()
 
 	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
 

@@ -25,7 +25,7 @@ type LeagueLeaderboard struct {
 	ID        uint      `gorm:"primaryKey"`
 	LeagueID  uint      `gorm:"not null"`
 	League    League    `gorm:"foreignKey:LeagueID"`
-	UserID    uint      `gorm:"not null"`
+	UserID    string    `gorm:"not null"`
 	User      User      `gorm:"foreignKey:UserID"`
 	Rank      uint      `gorm:"not null"`
 	Score     uint      `gorm:"not null"`

@@ -3,9 +3,9 @@
 package graph
 
 import (
-	"api/graph/model"
 	"bytes"
 	"context"
+	"core_api/graph/model"
 	"embed"
 	"errors"
 	"fmt"
@@ -47,32 +47,58 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Country struct {
+		ID   func(childComplexity int) int
+		Name func(childComplexity int) int
+		Slug func(childComplexity int) int
+	}
+
 	Mutation struct {
-		CreateTodo func(childComplexity int, input model.NewTodo) int
+		CreateUser func(childComplexity int, input model.CreateUserInput) int
+	}
+
+	Player struct {
+		Country  func(childComplexity int) int
+		ID       func(childComplexity int) int
+		Name     func(childComplexity int) int
+		Position func(childComplexity int) int
 	}
 
 	Query struct {
-		Todos func(childComplexity int) int
+		User func(childComplexity int, id string) int
 	}
 
-	Todo struct {
-		Done func(childComplexity int) int
-		ID   func(childComplexity int) int
-		Text func(childComplexity int) int
-		User func(childComplexity int) int
+	Squad struct {
+		ID      func(childComplexity int) int
+		Name    func(childComplexity int) int
+		Players func(childComplexity int) int
+	}
+
+	Team struct {
+		Country func(childComplexity int) int
+		ID      func(childComplexity int) int
+		Name    func(childComplexity int) int
 	}
 
 	User struct {
-		ID   func(childComplexity int) int
-		Name func(childComplexity int) int
+		Age            func(childComplexity int) int
+		Country        func(childComplexity int) int
+		CreatedAt      func(childComplexity int) int
+		Email          func(childComplexity int) int
+		FavoritePlayer func(childComplexity int) int
+		FavoriteTeam   func(childComplexity int) int
+		Gender         func(childComplexity int) int
+		ID             func(childComplexity int) int
+		Squad          func(childComplexity int) int
+		Username       func(childComplexity int) int
 	}
 }
 
 type MutationResolver interface {
-	CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error)
+	CreateUser(ctx context.Context, input model.CreateUserInput) (*model.User, error)
 }
 type QueryResolver interface {
-	Todos(ctx context.Context) ([]*model.Todo, error)
+	User(ctx context.Context, id string) (*model.User, error)
 }
 
 type executableSchema struct {
@@ -94,62 +120,172 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 	_ = ec
 	switch typeName + "." + field {
 
-	case "Mutation.createTodo":
-		if e.complexity.Mutation.CreateTodo == nil {
+	case "Country.id":
+		if e.complexity.Country.ID == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_createTodo_args(ctx, rawArgs)
+		return e.complexity.Country.ID(childComplexity), true
+	case "Country.name":
+		if e.complexity.Country.Name == nil {
+			break
+		}
+
+		return e.complexity.Country.Name(childComplexity), true
+	case "Country.slug":
+		if e.complexity.Country.Slug == nil {
+			break
+		}
+
+		return e.complexity.Country.Slug(childComplexity), true
+
+	case "Mutation.createUser":
+		if e.complexity.Mutation.CreateUser == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createUser_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateTodo(childComplexity, args["input"].(model.NewTodo)), true
+		return e.complexity.Mutation.CreateUser(childComplexity, args["input"].(model.CreateUserInput)), true
 
-	case "Query.todos":
-		if e.complexity.Query.Todos == nil {
+	case "Player.country":
+		if e.complexity.Player.Country == nil {
 			break
 		}
 
-		return e.complexity.Query.Todos(childComplexity), true
-
-	case "Todo.done":
-		if e.complexity.Todo.Done == nil {
+		return e.complexity.Player.Country(childComplexity), true
+	case "Player.id":
+		if e.complexity.Player.ID == nil {
 			break
 		}
 
-		return e.complexity.Todo.Done(childComplexity), true
-	case "Todo.id":
-		if e.complexity.Todo.ID == nil {
+		return e.complexity.Player.ID(childComplexity), true
+	case "Player.name":
+		if e.complexity.Player.Name == nil {
 			break
 		}
 
-		return e.complexity.Todo.ID(childComplexity), true
-	case "Todo.text":
-		if e.complexity.Todo.Text == nil {
+		return e.complexity.Player.Name(childComplexity), true
+	case "Player.position":
+		if e.complexity.Player.Position == nil {
 			break
 		}
 
-		return e.complexity.Todo.Text(childComplexity), true
-	case "Todo.user":
-		if e.complexity.Todo.User == nil {
+		return e.complexity.Player.Position(childComplexity), true
+
+	case "Query.user":
+		if e.complexity.Query.User == nil {
 			break
 		}
 
-		return e.complexity.Todo.User(childComplexity), true
+		args, err := ec.field_Query_user_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
 
+		return e.complexity.Query.User(childComplexity, args["id"].(string)), true
+
+	case "Squad.id":
+		if e.complexity.Squad.ID == nil {
+			break
+		}
+
+		return e.complexity.Squad.ID(childComplexity), true
+	case "Squad.name":
+		if e.complexity.Squad.Name == nil {
+			break
+		}
+
+		return e.complexity.Squad.Name(childComplexity), true
+	case "Squad.players":
+		if e.complexity.Squad.Players == nil {
+			break
+		}
+
+		return e.complexity.Squad.Players(childComplexity), true
+
+	case "Team.country":
+		if e.complexity.Team.Country == nil {
+			break
+		}
+
+		return e.complexity.Team.Country(childComplexity), true
+	case "Team.id":
+		if e.complexity.Team.ID == nil {
+			break
+		}
+
+		return e.complexity.Team.ID(childComplexity), true
+	case "Team.name":
+		if e.complexity.Team.Name == nil {
+			break
+		}
+
+		return e.complexity.Team.Name(childComplexity), true
+
+	case "User.age":
+		if e.complexity.User.Age == nil {
+			break
+		}
+
+		return e.complexity.User.Age(childComplexity), true
+	case "User.country":
+		if e.complexity.User.Country == nil {
+			break
+		}
+
+		return e.complexity.User.Country(childComplexity), true
+	case "User.createdAt":
+		if e.complexity.User.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.User.CreatedAt(childComplexity), true
+	case "User.email":
+		if e.complexity.User.Email == nil {
+			break
+		}
+
+		return e.complexity.User.Email(childComplexity), true
+	case "User.favoritePlayer":
+		if e.complexity.User.FavoritePlayer == nil {
+			break
+		}
+
+		return e.complexity.User.FavoritePlayer(childComplexity), true
+	case "User.favoriteTeam":
+		if e.complexity.User.FavoriteTeam == nil {
+			break
+		}
+
+		return e.complexity.User.FavoriteTeam(childComplexity), true
+	case "User.gender":
+		if e.complexity.User.Gender == nil {
+			break
+		}
+
+		return e.complexity.User.Gender(childComplexity), true
 	case "User.id":
 		if e.complexity.User.ID == nil {
 			break
 		}
 
 		return e.complexity.User.ID(childComplexity), true
-	case "User.name":
-		if e.complexity.User.Name == nil {
+	case "User.squad":
+		if e.complexity.User.Squad == nil {
 			break
 		}
 
-		return e.complexity.User.Name(childComplexity), true
+		return e.complexity.User.Squad(childComplexity), true
+	case "User.username":
+		if e.complexity.User.Username == nil {
+			break
+		}
+
+		return e.complexity.User.Username(childComplexity), true
 
 	}
 	return 0, false
@@ -159,7 +295,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	opCtx := graphql.GetOperationContext(ctx)
 	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
-		ec.unmarshalInputNewTodo,
+		ec.unmarshalInputCreateUserInput,
 	)
 	first := true
 
@@ -276,10 +412,10 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
 // region    ***************************** args.gotpl *****************************
 
-func (ec *executionContext) field_Mutation_createTodo_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+func (ec *executionContext) field_Mutation_createUser_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNNewTodo2apiᚋgraphᚋmodelᚐNewTodo)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNCreateUserInput2core_apiᚋgraphᚋmodelᚐCreateUserInput)
 	if err != nil {
 		return nil, err
 	}
@@ -295,6 +431,17 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		return nil, err
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_user_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2string)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
 	return args, nil
 }
 
@@ -350,24 +497,111 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Mutation_createTodo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Country_id(ctx context.Context, field graphql.CollectedField, obj *model.Country) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_Mutation_createTodo,
+		ec.fieldContext_Country_id,
 		func(ctx context.Context) (any, error) {
-			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().CreateTodo(ctx, fc.Args["input"].(model.NewTodo))
+			return obj.ID, nil
 		},
 		nil,
-		ec.marshalNTodo2ᚖapiᚋgraphᚋmodelᚐTodo,
+		ec.marshalNInt2int32,
 		true,
 		true,
 	)
 }
 
-func (ec *executionContext) fieldContext_Mutation_createTodo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Country_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Country",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Country_name(ctx context.Context, field graphql.CollectedField, obj *model.Country) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Country_name,
+		func(ctx context.Context) (any, error) {
+			return obj.Name, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Country_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Country",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Country_slug(ctx context.Context, field graphql.CollectedField, obj *model.Country) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Country_slug,
+		func(ctx context.Context) (any, error) {
+			return obj.Slug, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Country_slug(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Country",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_createUser,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().CreateUser(ctx, fc.Args["input"].(model.CreateUserInput))
+		},
+		nil,
+		ec.marshalNUser2ᚖcore_apiᚋgraphᚋmodelᚐUser,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -376,15 +610,27 @@ func (ec *executionContext) fieldContext_Mutation_createTodo(ctx context.Context
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
-				return ec.fieldContext_Todo_id(ctx, field)
-			case "text":
-				return ec.fieldContext_Todo_text(ctx, field)
-			case "done":
-				return ec.fieldContext_Todo_done(ctx, field)
-			case "user":
-				return ec.fieldContext_Todo_user(ctx, field)
+				return ec.fieldContext_User_id(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "username":
+				return ec.fieldContext_User_username(ctx, field)
+			case "age":
+				return ec.fieldContext_User_age(ctx, field)
+			case "favoriteTeam":
+				return ec.fieldContext_User_favoriteTeam(ctx, field)
+			case "favoritePlayer":
+				return ec.fieldContext_User_favoritePlayer(ctx, field)
+			case "squad":
+				return ec.fieldContext_User_squad(ctx, field)
+			case "country":
+				return ec.fieldContext_User_country(ctx, field)
+			case "gender":
+				return ec.fieldContext_User_gender(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_User_createdAt(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Todo", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
 	}
 	defer func() {
@@ -394,30 +640,155 @@ func (ec *executionContext) fieldContext_Mutation_createTodo(ctx context.Context
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_createTodo_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Mutation_createUser_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_todos(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Player_id(ctx context.Context, field graphql.CollectedField, obj *model.Player) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_Query_todos,
+		ec.fieldContext_Player_id,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Query().Todos(ctx)
+			return obj.ID, nil
 		},
 		nil,
-		ec.marshalNTodo2ᚕᚖapiᚋgraphᚋmodelᚐTodoᚄ,
+		ec.marshalNInt2int32,
 		true,
 		true,
 	)
 }
 
-func (ec *executionContext) fieldContext_Query_todos(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Player_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Player",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Player_name(ctx context.Context, field graphql.CollectedField, obj *model.Player) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Player_name,
+		func(ctx context.Context) (any, error) {
+			return obj.Name, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Player_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Player",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Player_position(ctx context.Context, field graphql.CollectedField, obj *model.Player) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Player_position,
+		func(ctx context.Context) (any, error) {
+			return obj.Position, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Player_position(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Player",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Player_country(ctx context.Context, field graphql.CollectedField, obj *model.Player) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Player_country,
+		func(ctx context.Context) (any, error) {
+			return obj.Country, nil
+		},
+		nil,
+		ec.marshalNCountry2ᚖcore_apiᚋgraphᚋmodelᚐCountry,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Player_country(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Player",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Country_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Country_name(ctx, field)
+			case "slug":
+				return ec.fieldContext_Country_slug(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Country", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_user(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_user,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().User(ctx, fc.Args["id"].(string))
+		},
+		nil,
+		ec.marshalNUser2ᚖcore_apiᚋgraphᚋmodelᚐUser,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_user(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -426,16 +797,39 @@ func (ec *executionContext) fieldContext_Query_todos(_ context.Context, field gr
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
-				return ec.fieldContext_Todo_id(ctx, field)
-			case "text":
-				return ec.fieldContext_Todo_text(ctx, field)
-			case "done":
-				return ec.fieldContext_Todo_done(ctx, field)
-			case "user":
-				return ec.fieldContext_Todo_user(ctx, field)
+				return ec.fieldContext_User_id(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "username":
+				return ec.fieldContext_User_username(ctx, field)
+			case "age":
+				return ec.fieldContext_User_age(ctx, field)
+			case "favoriteTeam":
+				return ec.fieldContext_User_favoriteTeam(ctx, field)
+			case "favoritePlayer":
+				return ec.fieldContext_User_favoritePlayer(ctx, field)
+			case "squad":
+				return ec.fieldContext_User_squad(ctx, field)
+			case "country":
+				return ec.fieldContext_User_country(ctx, field)
+			case "gender":
+				return ec.fieldContext_User_gender(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_User_createdAt(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Todo", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_user_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -548,43 +942,43 @@ func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _Todo_id(ctx context.Context, field graphql.CollectedField, obj *model.Todo) (ret graphql.Marshaler) {
+func (ec *executionContext) _Squad_id(ctx context.Context, field graphql.CollectedField, obj *model.Squad) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_Todo_id,
+		ec.fieldContext_Squad_id,
 		func(ctx context.Context) (any, error) {
 			return obj.ID, nil
 		},
 		nil,
-		ec.marshalNID2string,
+		ec.marshalNInt2int32,
 		true,
 		true,
 	)
 }
 
-func (ec *executionContext) fieldContext_Todo_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Squad_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "Todo",
+		Object:     "Squad",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Todo_text(ctx context.Context, field graphql.CollectedField, obj *model.Todo) (ret graphql.Marshaler) {
+func (ec *executionContext) _Squad_name(ctx context.Context, field graphql.CollectedField, obj *model.Squad) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_Todo_text,
+		ec.fieldContext_Squad_name,
 		func(ctx context.Context) (any, error) {
-			return obj.Text, nil
+			return obj.Name, nil
 		},
 		nil,
 		ec.marshalNString2string,
@@ -593,9 +987,9 @@ func (ec *executionContext) _Todo_text(ctx context.Context, field graphql.Collec
 	)
 }
 
-func (ec *executionContext) fieldContext_Todo_text(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Squad_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "Todo",
+		Object:     "Squad",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -606,65 +1000,135 @@ func (ec *executionContext) fieldContext_Todo_text(_ context.Context, field grap
 	return fc, nil
 }
 
-func (ec *executionContext) _Todo_done(ctx context.Context, field graphql.CollectedField, obj *model.Todo) (ret graphql.Marshaler) {
+func (ec *executionContext) _Squad_players(ctx context.Context, field graphql.CollectedField, obj *model.Squad) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_Todo_done,
+		ec.fieldContext_Squad_players,
 		func(ctx context.Context) (any, error) {
-			return obj.Done, nil
+			return obj.Players, nil
 		},
 		nil,
-		ec.marshalNBoolean2bool,
+		ec.marshalNPlayer2ᚕᚖcore_apiᚋgraphᚋmodelᚐPlayerᚄ,
 		true,
 		true,
 	)
 }
 
-func (ec *executionContext) fieldContext_Todo_done(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Squad_players(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "Todo",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Todo_user(ctx context.Context, field graphql.CollectedField, obj *model.Todo) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Todo_user,
-		func(ctx context.Context) (any, error) {
-			return obj.User, nil
-		},
-		nil,
-		ec.marshalNUser2ᚖapiᚋgraphᚋmodelᚐUser,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_Todo_user(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Todo",
+		Object:     "Squad",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
-				return ec.fieldContext_User_id(ctx, field)
+				return ec.fieldContext_Player_id(ctx, field)
 			case "name":
-				return ec.fieldContext_User_name(ctx, field)
+				return ec.fieldContext_Player_name(ctx, field)
+			case "position":
+				return ec.fieldContext_Player_position(ctx, field)
+			case "country":
+				return ec.fieldContext_Player_country(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Player", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Team_id(ctx context.Context, field graphql.CollectedField, obj *model.Team) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Team_id,
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		ec.marshalNInt2int32,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Team_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Team",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Team_name(ctx context.Context, field graphql.CollectedField, obj *model.Team) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Team_name,
+		func(ctx context.Context) (any, error) {
+			return obj.Name, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Team_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Team",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Team_country(ctx context.Context, field graphql.CollectedField, obj *model.Team) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Team_country,
+		func(ctx context.Context) (any, error) {
+			return obj.Country, nil
+		},
+		nil,
+		ec.marshalNCountry2ᚖcore_apiᚋgraphᚋmodelᚐCountry,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Team_country(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Team",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Country_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Country_name(ctx, field)
+			case "slug":
+				return ec.fieldContext_Country_slug(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Country", field.Name)
 		},
 	}
 	return fc, nil
@@ -699,14 +1163,14 @@ func (ec *executionContext) fieldContext_User_id(_ context.Context, field graphq
 	return fc, nil
 }
 
-func (ec *executionContext) _User_name(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_email(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_User_name,
+		ec.fieldContext_User_email,
 		func(ctx context.Context) (any, error) {
-			return obj.Name, nil
+			return obj.Email, nil
 		},
 		nil,
 		ec.marshalNString2string,
@@ -715,7 +1179,273 @@ func (ec *executionContext) _User_name(ctx context.Context, field graphql.Collec
 	)
 }
 
-func (ec *executionContext) fieldContext_User_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_User_email(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_username(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_User_username,
+		func(ctx context.Context) (any, error) {
+			return obj.Username, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_User_username(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_age(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_User_age,
+		func(ctx context.Context) (any, error) {
+			return obj.Age, nil
+		},
+		nil,
+		ec.marshalNInt2int32,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_User_age(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_favoriteTeam(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_User_favoriteTeam,
+		func(ctx context.Context) (any, error) {
+			return obj.FavoriteTeam, nil
+		},
+		nil,
+		ec.marshalNTeam2ᚖcore_apiᚋgraphᚋmodelᚐTeam,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_User_favoriteTeam(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Team_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Team_name(ctx, field)
+			case "country":
+				return ec.fieldContext_Team_country(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Team", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_favoritePlayer(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_User_favoritePlayer,
+		func(ctx context.Context) (any, error) {
+			return obj.FavoritePlayer, nil
+		},
+		nil,
+		ec.marshalNPlayer2ᚖcore_apiᚋgraphᚋmodelᚐPlayer,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_User_favoritePlayer(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Player_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Player_name(ctx, field)
+			case "position":
+				return ec.fieldContext_Player_position(ctx, field)
+			case "country":
+				return ec.fieldContext_Player_country(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Player", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_squad(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_User_squad,
+		func(ctx context.Context) (any, error) {
+			return obj.Squad, nil
+		},
+		nil,
+		ec.marshalOSquad2ᚖcore_apiᚋgraphᚋmodelᚐSquad,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_User_squad(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Squad_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Squad_name(ctx, field)
+			case "players":
+				return ec.fieldContext_Squad_players(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Squad", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_country(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_User_country,
+		func(ctx context.Context) (any, error) {
+			return obj.Country, nil
+		},
+		nil,
+		ec.marshalNCountry2ᚖcore_apiᚋgraphᚋmodelᚐCountry,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_User_country(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Country_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Country_name(ctx, field)
+			case "slug":
+				return ec.fieldContext_Country_slug(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Country", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_gender(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_User_gender,
+		func(ctx context.Context) (any, error) {
+			return obj.Gender, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_User_gender(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_User_createdAt,
+		func(ctx context.Context) (any, error) {
+			return obj.CreatedAt, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_User_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "User",
 		Field:      field,
@@ -2174,34 +2904,69 @@ func (ec *executionContext) fieldContext___Type_isOneOf(_ context.Context, field
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj any) (model.NewTodo, error) {
-	var it model.NewTodo
+func (ec *executionContext) unmarshalInputCreateUserInput(ctx context.Context, obj any) (model.CreateUserInput, error) {
+	var it model.CreateUserInput
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"text", "userId"}
+	fieldsInOrder := [...]string{"email", "username", "age", "favoriteTeamId", "favoritePlayerId", "countryId", "gender"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "text":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("text"))
+		case "email":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.Text = data
-		case "userId":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
+			it.Email = data
+		case "username":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("username"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.UserID = data
+			it.Username = data
+		case "age":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("age"))
+			data, err := ec.unmarshalNInt2int32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Age = data
+		case "favoriteTeamId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("favoriteTeamId"))
+			data, err := ec.unmarshalNInt2int32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FavoriteTeamID = data
+		case "favoritePlayerId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("favoritePlayerId"))
+			data, err := ec.unmarshalNInt2int32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FavoritePlayerID = data
+		case "countryId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("countryId"))
+			data, err := ec.unmarshalNInt2int32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CountryID = data
+		case "gender":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gender"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Gender = data
 		}
 	}
 
@@ -2215,6 +2980,55 @@ func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj any) 
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
+
+var countryImplementors = []string{"Country"}
+
+func (ec *executionContext) _Country(ctx context.Context, sel ast.SelectionSet, obj *model.Country) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, countryImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Country")
+		case "id":
+			out.Values[i] = ec._Country_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "name":
+			out.Values[i] = ec._Country_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "slug":
+			out.Values[i] = ec._Country_slug(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
 
 var mutationImplementors = []string{"Mutation"}
 
@@ -2235,10 +3049,64 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
-		case "createTodo":
+		case "createUser":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_createTodo(ctx, field)
+				return ec._Mutation_createUser(ctx, field)
 			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var playerImplementors = []string{"Player"}
+
+func (ec *executionContext) _Player(ctx context.Context, sel ast.SelectionSet, obj *model.Player) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, playerImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Player")
+		case "id":
+			out.Values[i] = ec._Player_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "name":
+			out.Values[i] = ec._Player_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "position":
+			out.Values[i] = ec._Player_position(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "country":
+			out.Values[i] = ec._Player_country(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -2284,7 +3152,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "todos":
+		case "user":
 			field := field
 
 			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
@@ -2293,7 +3161,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_todos(ctx, field)
+				res = ec._Query_user(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -2337,34 +3205,78 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 	return out
 }
 
-var todoImplementors = []string{"Todo"}
+var squadImplementors = []string{"Squad"}
 
-func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj *model.Todo) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, todoImplementors)
+func (ec *executionContext) _Squad(ctx context.Context, sel ast.SelectionSet, obj *model.Squad) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, squadImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Todo")
+			out.Values[i] = graphql.MarshalString("Squad")
 		case "id":
-			out.Values[i] = ec._Todo_id(ctx, field, obj)
+			out.Values[i] = ec._Squad_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "text":
-			out.Values[i] = ec._Todo_text(ctx, field, obj)
+		case "name":
+			out.Values[i] = ec._Squad_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "done":
-			out.Values[i] = ec._Todo_done(ctx, field, obj)
+		case "players":
+			out.Values[i] = ec._Squad_players(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "user":
-			out.Values[i] = ec._Todo_user(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var teamImplementors = []string{"Team"}
+
+func (ec *executionContext) _Team(ctx context.Context, sel ast.SelectionSet, obj *model.Team) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, teamImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Team")
+		case "id":
+			out.Values[i] = ec._Team_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "name":
+			out.Values[i] = ec._Team_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "country":
+			out.Values[i] = ec._Team_country(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -2407,8 +3319,45 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "name":
-			out.Values[i] = ec._User_name(ctx, field, obj)
+		case "email":
+			out.Values[i] = ec._User_email(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "username":
+			out.Values[i] = ec._User_username(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "age":
+			out.Values[i] = ec._User_age(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "favoriteTeam":
+			out.Values[i] = ec._User_favoriteTeam(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "favoritePlayer":
+			out.Values[i] = ec._User_favoritePlayer(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "squad":
+			out.Values[i] = ec._User_squad(ctx, field, obj)
+		case "country":
+			out.Values[i] = ec._User_country(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "gender":
+			out.Values[i] = ec._User_gender(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createdAt":
+			out.Values[i] = ec._User_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -2786,6 +3735,21 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) marshalNCountry2ᚖcore_apiᚋgraphᚋmodelᚐCountry(ctx context.Context, sel ast.SelectionSet, v *model.Country) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Country(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNCreateUserInput2core_apiᚋgraphᚋmodelᚐCreateUserInput(ctx context.Context, v any) (model.CreateUserInput, error) {
+	res, err := ec.unmarshalInputCreateUserInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v any) (string, error) {
 	res, err := graphql.UnmarshalID(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -2802,19 +3766,14 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 	return res
 }
 
-func (ec *executionContext) unmarshalNNewTodo2apiᚋgraphᚋmodelᚐNewTodo(ctx context.Context, v any) (model.NewTodo, error) {
-	res, err := ec.unmarshalInputNewTodo(ctx, v)
+func (ec *executionContext) unmarshalNInt2int32(ctx context.Context, v any) (int32, error) {
+	res, err := graphql.UnmarshalInt32(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNString2string(ctx context.Context, v any) (string, error) {
-	res, err := graphql.UnmarshalString(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+func (ec *executionContext) marshalNInt2int32(ctx context.Context, sel ast.SelectionSet, v int32) graphql.Marshaler {
 	_ = sel
-	res := graphql.MarshalString(v)
+	res := graphql.MarshalInt32(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
@@ -2823,11 +3782,7 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNTodo2apiᚋgraphᚋmodelᚐTodo(ctx context.Context, sel ast.SelectionSet, v model.Todo) graphql.Marshaler {
-	return ec._Todo(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNTodo2ᚕᚖapiᚋgraphᚋmodelᚐTodoᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Todo) graphql.Marshaler {
+func (ec *executionContext) marshalNPlayer2ᚕᚖcore_apiᚋgraphᚋmodelᚐPlayerᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Player) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -2851,7 +3806,7 @@ func (ec *executionContext) marshalNTodo2ᚕᚖapiᚋgraphᚋmodelᚐTodoᚄ(ctx
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNTodo2ᚖapiᚋgraphᚋmodelᚐTodo(ctx, sel, v[i])
+			ret[i] = ec.marshalNPlayer2ᚖcore_apiᚋgraphᚋmodelᚐPlayer(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -2871,17 +3826,47 @@ func (ec *executionContext) marshalNTodo2ᚕᚖapiᚋgraphᚋmodelᚐTodoᚄ(ctx
 	return ret
 }
 
-func (ec *executionContext) marshalNTodo2ᚖapiᚋgraphᚋmodelᚐTodo(ctx context.Context, sel ast.SelectionSet, v *model.Todo) graphql.Marshaler {
+func (ec *executionContext) marshalNPlayer2ᚖcore_apiᚋgraphᚋmodelᚐPlayer(ctx context.Context, sel ast.SelectionSet, v *model.Player) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
-	return ec._Todo(ctx, sel, v)
+	return ec._Player(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNUser2ᚖapiᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
+func (ec *executionContext) unmarshalNString2string(ctx context.Context, v any) (string, error) {
+	res, err := graphql.UnmarshalString(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	_ = sel
+	res := graphql.MarshalString(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) marshalNTeam2ᚖcore_apiᚋgraphᚋmodelᚐTeam(ctx context.Context, sel ast.SelectionSet, v *model.Team) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Team(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNUser2core_apiᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v model.User) graphql.Marshaler {
+	return ec._User(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNUser2ᚖcore_apiᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
@@ -3172,6 +4157,13 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	_ = ctx
 	res := graphql.MarshalBoolean(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOSquad2ᚖcore_apiᚋgraphᚋmodelᚐSquad(ctx context.Context, sel ast.SelectionSet, v *model.Squad) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Squad(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v any) (*string, error) {

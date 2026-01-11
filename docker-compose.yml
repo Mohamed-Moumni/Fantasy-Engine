@@ -16,16 +16,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-  
-  engine:
-    build: ./services/engine
-    ports:
-      - "8081:8080"
-    env_file:
-      - ./service/engine/.backend.env
-    depends_on:
-      db:
-        condition: service_healthy
 
 volumes:
   postgres_data:

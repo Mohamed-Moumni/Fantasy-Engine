@@ -2,27 +2,60 @@
 #
 # https://gqlgen.com/getting-started/
 
-type Todo {
-  id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
-}
-
 type User {
   id: ID!
+  email: String!
+  username: String!
+  age: Int!
+  favoriteTeam: Team!
+  favoritePlayer: Player!
+  squad: Squad
+  country: Country!
+  gender: String!
+  createdAt: String!
+}
+
+type Team {
+  id: Int!
   name: String!
+  country: Country!
+}
+
+type Country {
+  id: Int!
+  name: String!
+  slug: String!
+}
+
+type Player {
+  id: Int!
+  name: String!
+  position: String!
+  country: Country!
+}
+
+type Squad {
+  id: Int!
+  name: String!
+  players: [Player!]!
 }
 
 type Query {
-  todos: [Todo!]!
-}
-
-input NewTodo {
-  text: String!
-  userId: String!
+  user(id: ID!): User!
 }
 
 type Mutation {
-  createTodo(input: NewTodo!): Todo!
+  createUser(input: CreateUserInput!): User!
 }
+
+
+input CreateUserInput {
+  email: String!
+  username: String!
+  age: Int!
+  favoriteTeamId: Int!
+  favoritePlayerId: Int!
+  countryId: Int!
+  gender: String!
+}
+

@@ -2,25 +2,56 @@
 
 package model
 
+type Country struct {
+	ID   int32  `json:"id"`
+	Name string `json:"name"`
+	Slug string `json:"slug"`
+}
+
+type CreateUserInput struct {
+	Email            string `json:"email"`
+	Username         string `json:"username"`
+	Age              int32  `json:"age"`
+	FavoriteTeamID   int32  `json:"favoriteTeamId"`
+	FavoritePlayerID int32  `json:"favoritePlayerId"`
+	CountryID        int32  `json:"countryId"`
+	Gender           string `json:"gender"`
+}
+
 type Mutation struct {
 }
 
-type NewTodo struct {
-	Text   string `json:"text"`
-	UserID string `json:"userId"`
+type Player struct {
+	ID       int32    `json:"id"`
+	Name     string   `json:"name"`
+	Position string   `json:"position"`
+	Country  *Country `json:"country"`
 }
 
 type Query struct {
 }
 
-type Todo struct {
-	ID   string `json:"id"`
-	Text string `json:"text"`
-	Done bool   `json:"done"`
-	User *User  `json:"user"`
+type Squad struct {
+	ID      int32     `json:"id"`
+	Name    string    `json:"name"`
+	Players []*Player `json:"players"`
+}
+
+type Team struct {
+	ID      int32    `json:"id"`
+	Name    string   `json:"name"`
+	Country *Country `json:"country"`
 }
 
 type User struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID             string   `json:"id"`
+	Email          string   `json:"email"`
+	Username       string   `json:"username"`
+	Age            int32    `json:"age"`
+	FavoriteTeam   *Team    `json:"favoriteTeam"`
+	FavoritePlayer *Player  `json:"favoritePlayer"`
+	Squad          *Squad   `json:"squad,omitempty"`
+	Country        *Country `json:"country"`
+	Gender         string   `json:"gender"`
+	CreatedAt      string   `json:"createdAt"`
 }
