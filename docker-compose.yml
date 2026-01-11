@@ -16,19 +16,16 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  api:
-    build: .
+  
+  engine:
+    build: ./services/engine
     ports:
-      - "8080:8080"
+      - "8081:8080"
     env_file:
-      - .backend.env
+      - ./service/engine/.backend.env
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - .:/app
-    command: go run ./cmd/server
 
 volumes:
   postgres_data:
