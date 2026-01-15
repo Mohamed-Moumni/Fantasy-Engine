@@ -1,0 +1,8 @@
+type Player {
+    id: ID!
+    name: String!
+    position: String!
+    country: Country!
+    CreatedAt: DateTime!
+    UpdatedAt: DateTime!
+}

@@ -1,0 +1,37 @@
+type Squad {
+    id: ID!
+    name: String!
+    players: [SquadPlayer!]!
+    CreatedAt: DateTime!
+}
+
+type SquadPlayer {
+    id: ID!
+    player: Player!
+    captain: Boolean!
+    viceCaptain: Boolean!
+    injured: Boolean!
+    suspended: Boolean!
+    score: Int!
+    price: Float!
+    isStarting: Boolean!
+    positionOrder: Int!
+    CreatedAt: DateTime!
+}
+
+input CreateSquadInput {
+    name: String!
+    players: [CreateSquadPlayerInput!]!
+}
+
+input CreateSquadPlayerInput {
+    playerId: ID!
+    captain: Boolean!
+    viceCaptain: Boolean!
+    injured: Boolean!
+    suspended: Boolean!
+    score: Int!
+    price: Float!
+    isStarting: Boolean!
+    positionOrder: Int!
+}

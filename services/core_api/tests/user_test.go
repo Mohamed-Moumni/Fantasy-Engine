@@ -1,80 +1,26 @@
 package core_api
 
 import (
-	"context"
-	"fmt"
+	"core_api/tests/testutil"
 	"testing"
-	"time"
 
 	"core_api/internal/repository"
-	"pkg/database"
 	"pkg/models"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/testcontainers/testcontainers-go"
-	"github.com/testcontainers/testcontainers-go/modules/postgres"
-	"github.com/testcontainers/testcontainers-go/wait"
+
 	"gorm.io/gorm"
 )
 
-const USER_ID = "845df16a-db46-4767-a553-92d822023461"
-
-func setupTestDB(t *testing.T) (*gorm.DB, func()) {
-	ctx := context.Background()
-
-	// Start PostgreSQL container
-	pgContainer, err := postgres.Run(ctx,
-		"postgres:16-alpine",
-		postgres.WithDatabase("test_db"),
-		postgres.WithUsername("test_user"),
-		postgres.WithPassword("test_password"),
-		testcontainers.WithWaitStrategy(
-			wait.ForLog("database system is ready to accept connections").
-				WithOccurrence(2).
-				WithStartupTimeout(60*time.Second),
-		),
-	)
-	if err != nil {
-		t.Fatalf("Failed to start postgres container: %v", err)
-	}
-
-	// Get connection string
-	connStr, err := pgContainer.ConnectionString(ctx, "sslmode=disable")
-	if err != nil {
-		t.Fatalf("Failed to get connection string: %v", err)
-	}
-
-	fmt.Println(connStr)
-
-	// Connect with GORM
-	db, err := database.NewConnection(connStr)
-	if err != nil {
-		t.Fatalf("Failed to connect to database: %v", err)
-	}
-
-	// Run migrations
-	err = database.AutoMigrate(db)
-	if err != nil {
-		t.Fatalf("Failed to migrate database: %v", err)
-	}
-
-	// Return cleanup function that terminates the container
-	cleanup := func() {
-		if err := pgContainer.Terminate(ctx); err != nil {
-			t.Logf("Failed to terminate container: %v", err)
-		}
-	}
-	return db, cleanup
-}
-
 func TestAll(t *testing.T) {
-	db, cleanup := setupTestDB(t)
+	db, cleanup := testutil.SetupTestDB(t)
 	t.Cleanup(cleanup)
 
 	t.Run("CreateUser", func(t *testing.T) { CreateUser(t, db) })
 	t.Run("GetUserByID", func(t *testing.T) { GetUserByID(t, db) })
 	t.Run("GetUserByEmail", func(t *testing.T) { GetUserByEmail(t, db) })
 	t.Run("DuplicateEmailUser", func(t *testing.T) { DuplicateEmailUser(t, db) })
+	t.Run("UpdateUser", func(t *testing.T) { UpdateUser(t, db) })
 }
 
 func CreateUser(t *testing.T, db *gorm.DB) {
@@ -97,7 +43,7 @@ func CreateUser(t *testing.T, db *gorm.DB) {
 	}
 	// Create user to test
 	user := models.User{
-		ID:               USER_ID,
+		ID:               testutil.USER_ID,
 		Email:            "test@example.com",
 		Username:         "testuser",
 		Age:              20,
@@ -128,7 +74,7 @@ func CreateUser(t *testing.T, db *gorm.DB) {
 func GetUserByID(t *testing.T, db *gorm.DB) {
 
 	userRepository := repository.NewUserRepository(db)
-	user, err := userRepository.GetUserByID(USER_ID)
+	user, err := userRepository.GetUserByID(testutil.USER_ID)
 	if err != nil {
 		t.Fatalf("Failed to get user: %v", err)
 	}
@@ -161,4 +107,16 @@ func DuplicateEmailUser(t *testing.T, db *gorm.DB) {
 	userRepository := repository.NewUserRepository(db)
 	err := userRepository.CreateUser(&user)
 	assert.Error(t, err)
+}
+
+func UpdateUser(t *testing.T, db *gorm.DB) {
+	userRepository := repository.NewUserRepository(db)
+	user, err := userRepository.GetUserByID(testutil.USER_ID)
+	if err != nil {
+		t.Fatalf("Failed to get user: %v", err)
+	}
+	user.Email = "test2@example.com"
+	err = userRepository.UpdateUser(user)
+	assert.NoError(t, err)
+	assert.Equal(t, "test2@example.com", user.Email)
 }
