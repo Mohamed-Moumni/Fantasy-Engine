@@ -10,35 +10,8 @@ import (
 	"core_api/graph/model"
 	"core_api/internal/repository"
 	"pkg/database"
-	"pkg/models"
 	"time"
 )
-
-// CreateUser is the resolver for the createUser field.
-func (r *mutationResolver) CreateUser(ctx context.Context, input model.CreateUserInput) (*model.User, error) {
-	db := database.DB
-	user := models.User{
-		Email:            input.Email,
-		Username:         input.Username,
-		Age:              uint(input.Age),
-		FavoriteTeamID:   uint(input.FavoriteTeamID),
-		FavoritePlayerID: uint(input.FavoritePlayerID),
-		CountryID:        uint(input.CountryID),
-		Gender:           input.Gender,
-	}
-	userRepository := repository.NewUserRepository(db)
-	err := userRepository.CreateUser(&user)
-	if err != nil {
-		return nil, err
-	}
-	return &model.User{
-		ID:        user.ID,
-		Email:     user.Email,
-		Username:  user.Username,
-		Age:       int32(user.Age),
-		CreatedAt: user.CreatedAt.Format(time.RFC3339),
-	}, nil
-}
 
 // User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
@@ -58,11 +31,37 @@ func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error
 	}, nil
 }
 
-// Mutation returns MutationResolver implementation.
-func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
+// Squad is the resolver for the squad field.
+func (r *queryResolver) Squad(ctx context.Context, id int32) (*model.Squad, error) {
+	db := database.DB
+
+	squadRepository := repository.NewSquadRepository(db)
+	squad, err := squadRepository.GetSquadByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	squadPlayers, err := squadRepository.GetSquadPlayersBySquadID(int32(squad.ID))
+	if err != nil {
+		return nil, err
+	}
+
+	squadPlayersModel := make([]*model.SquadPlayer, len(squadPlayers))
+	for i, squadPlayer := range squadPlayers {
+		squadPlayersModel[i] = &model.SquadPlayer{
+			ID:     int32(squadPlayer.ID),
+			Player: &model.Player{ID: int32(squadPlayer.Player.ID), Name: squadPlayer.Player.Name},
+		}
+	}
+	return &model.Squad{
+		ID:      int32(squad.ID),
+		Name:    squad.Name,
+		Players: squadPlayersModel,
+	}, nil
+
+}
 
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
-type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

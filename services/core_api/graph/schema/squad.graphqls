@@ -1,37 +1,41 @@
 type Squad {
-    id: ID!
-    name: String!
-    players: [SquadPlayer!]!
-    CreatedAt: DateTime!
+  id: Int!
+  name: String!
+  players: [SquadPlayer!]!
 }
 
 type SquadPlayer {
-    id: ID!
-    player: Player!
-    captain: Boolean!
-    viceCaptain: Boolean!
-    injured: Boolean!
-    suspended: Boolean!
-    score: Int!
-    price: Float!
-    isStarting: Boolean!
-    positionOrder: Int!
-    CreatedAt: DateTime!
+  id: Int!
+  player: Player!
+  captain: Boolean!
+  viceCaptain: Boolean!
+  injured: Boolean!
+  suspended: Boolean!
+  score: Int!
+  price: Float!
+  isStarting: Boolean!
+  positionOrder: Int!
 }
 
 input CreateSquadInput {
-    name: String!
-    players: [CreateSquadPlayerInput!]!
+  name: String!
+  players: [CreateSquadPlayerInput!]!
 }
 
+
 input CreateSquadPlayerInput {
-    playerId: ID!
-    captain: Boolean!
-    viceCaptain: Boolean!
-    injured: Boolean!
-    suspended: Boolean!
-    score: Int!
-    price: Float!
-    isStarting: Boolean!
-    positionOrder: Int!
+  playerId: Int!
+  captain: Boolean!
+  viceCaptain: Boolean!
+  injured: Boolean!
+  suspended: Boolean!
+  score: Int!
+  price: Float!
+  isStarting: Boolean!
+  positionOrder: Int!
+}
+
+type Mutation {
+  createSquad(input: CreateSquadInput!): Squad!
+  createUser(input: CreateUserInput!): User!
 }

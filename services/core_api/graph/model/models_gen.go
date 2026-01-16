@@ -8,6 +8,23 @@ type Country struct {
 	Slug string `json:"slug"`
 }
 
+type CreateSquadInput struct {
+	Name    string                    `json:"name"`
+	Players []*CreateSquadPlayerInput `json:"players"`
+}
+
+type CreateSquadPlayerInput struct {
+	PlayerID      int32   `json:"playerId"`
+	Captain       bool    `json:"captain"`
+	ViceCaptain   bool    `json:"viceCaptain"`
+	Injured       bool    `json:"injured"`
+	Suspended     bool    `json:"suspended"`
+	Score         int32   `json:"score"`
+	Price         float64 `json:"price"`
+	IsStarting    bool    `json:"isStarting"`
+	PositionOrder int32   `json:"positionOrder"`
+}
+
 type CreateUserInput struct {
 	Email            string `json:"email"`
 	Username         string `json:"username"`
@@ -32,9 +49,22 @@ type Query struct {
 }
 
 type Squad struct {
-	ID      int32     `json:"id"`
-	Name    string    `json:"name"`
-	Players []*Player `json:"players"`
+	ID      int32          `json:"id"`
+	Name    string         `json:"name"`
+	Players []*SquadPlayer `json:"players"`
+}
+
+type SquadPlayer struct {
+	ID            int32   `json:"id"`
+	Player        *Player `json:"player"`
+	Captain       bool    `json:"captain"`
+	ViceCaptain   bool    `json:"viceCaptain"`
+	Injured       bool    `json:"injured"`
+	Suspended     bool    `json:"suspended"`
+	Score         int32   `json:"score"`
+	Price         float64 `json:"price"`
+	IsStarting    bool    `json:"isStarting"`
+	PositionOrder int32   `json:"positionOrder"`
 }
 
 type Team struct {

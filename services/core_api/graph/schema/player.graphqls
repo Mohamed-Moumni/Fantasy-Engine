@@ -1,8 +1,12 @@
 type Player {
-    id: ID!
-    name: String!
-    position: String!
-    country: Country!
-    CreatedAt: DateTime!
-    UpdatedAt: DateTime!
+  id: Int!
+  name: String!
+  position: String!
+  country: Country!
+}
+
+type Country {
+  id: Int!
+  name: String!
+  slug: String!
 }

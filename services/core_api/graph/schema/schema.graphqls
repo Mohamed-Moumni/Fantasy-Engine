@@ -21,33 +21,10 @@ type Team {
   country: Country!
 }
 
-type Country {
-  id: Int!
-  name: String!
-  slug: String!
-}
-
-type Player {
-  id: Int!
-  name: String!
-  position: String!
-  country: Country!
-}
-
-type Squad {
-  id: Int!
-  name: String!
-  players: [Player!]!
-}
-
 type Query {
-  user(id: ID!): User!
+  user(id: String!): User!
+  squad(id: Int!): Squad!
 }
-
-type Mutation {
-  createUser(input: CreateUserInput!): User!
-}
-
 
 input CreateUserInput {
   email: String!
