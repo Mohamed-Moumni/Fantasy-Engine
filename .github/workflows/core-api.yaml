@@ -1,0 +1,28 @@
+name: Core API CI
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - 'services/core_api/**'
+      - 'pkg/**'
+  pull_request:
+    branches: [dev, main]
+    paths:
+      - 'services/core_api/**'
+      - 'pkg/**'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/core_api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+      - run: go mod download
+      - run: go build -o bin/server ./...
+      - run: go test -v ./tests/...
