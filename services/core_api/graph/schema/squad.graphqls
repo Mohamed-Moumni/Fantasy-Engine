@@ -35,7 +35,13 @@ input CreateSquadPlayerInput {
   positionOrder: Int!
 }
 
+input SubstitutePlayerInput {
+  squadPlayerIdToSubstitute: Int!
+  squadPlayerIdToReplace: Int!
+}
+
 type Mutation {
   createSquad(input: CreateSquadInput!): Squad!
   createUser(input: CreateUserInput!): User!
+  substitutePlayer(input: SubstitutePlayerInput!): Squad!
 }

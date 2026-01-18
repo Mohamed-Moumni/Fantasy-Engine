@@ -10,6 +10,7 @@ import (
 	"core_api/graph/model"
 	"core_api/internal/repository"
 	"core_api/internal/service"
+	"fmt"
 	"pkg/database"
 	"pkg/models"
 	"time"
@@ -18,11 +19,13 @@ import (
 // CreateSquad is the resolver for the createSquad field.
 // CreateSquad is the resolver for the createSquad field.
 func (r *mutationResolver) CreateSquad(ctx context.Context, input model.CreateSquadInput) (*model.Squad, error) {
+	userID, _ := ctx.Value("userID").(string)
+	if userID == "" {
+		return nil, fmt.Errorf("User Unauthorized")
+	}
 	db := database.DB
-	userId := "a7d64e79-d36d-4f3d-9e3a-9ae27adecef1"
-
 	squadService := service.NewSquadService(repository.NewUserRepository(db), repository.NewSquadRepository(db))
-	squad, err := squadService.CreateSquad(&input, userId)
+	squad, err := squadService.CreateSquad(ctx, &input)
 	if err != nil {
 		return nil, err
 	}
@@ -53,6 +56,22 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.CreateUse
 		Age:       int32(user.Age),
 		CreatedAt: user.CreatedAt.Format(time.RFC3339),
 	}, nil
+}
+
+// SubstitutePlayer is the resolver for the substitutePlayer field.
+func (r *mutationResolver) SubstitutePlayer(ctx context.Context, input model.SubstitutePlayerInput) (*model.Squad, error) {
+	userID, _ := ctx.Value("userID").(string)
+	if userID == "" {
+		return nil, fmt.Errorf("User Unauthorized")
+	}
+	db := database.DB
+
+	squadService := service.NewSquadService(repository.NewUserRepository(db), repository.NewSquadRepository(db))
+	squad, err := squadService.SubstitutePlayer(ctx, &input)
+	if err != nil {
+		return nil, err
+	}
+	return squad, nil
 }
 
 // Mutation returns MutationResolver implementation.
