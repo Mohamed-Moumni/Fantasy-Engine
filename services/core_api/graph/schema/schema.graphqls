@@ -1,0 +1,38 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type User {
+  id: ID!
+  email: String!
+  username: String!
+  age: Int!
+  favoriteTeam: Team!
+  favoritePlayer: Player!
+  squad: Squad
+  country: Country!
+  gender: String!
+  createdAt: String!
+}
+
+type Team {
+  id: Int!
+  name: String!
+  country: Country!
+}
+
+type Query {
+  user(id: String!): User!
+  squad(id: Int!): Squad!
+}
+
+input CreateUserInput {
+  email: String!
+  username: String!
+  age: Int!
+  favoriteTeamId: Int!
+  favoritePlayerId: Int!
+  countryId: Int!
+  gender: String!
+}
+
