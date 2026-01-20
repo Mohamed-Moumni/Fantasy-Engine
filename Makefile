@@ -13,7 +13,7 @@ build: ## Build the application
 	go build -o bin/server ./cmd/server
 
 test: ## Run tests
-	go test -v ./...
+	go test -v ./tests/...
 
 clean: ## Clean build artifacts
 	rm -rf bin/

@@ -17,18 +17,5 @@ services:
       timeout: 5s
       retries: 5
 
-  api:
-    build: .
-    ports:
-      - "8080:8080"
-    env_file:
-      - .backend.env
-    depends_on:
-      db:
-        condition: service_healthy
-    volumes:
-      - .:/app
-    command: go run ./cmd/server
-
 volumes:
   postgres_data:
