@@ -1,4 +1,4 @@
-package graph
+package resolvers
 
 // This file will be automatically regenerated based on the schema, any resolver
 // implementations
@@ -7,6 +7,7 @@ package graph
 
 import (
 	"context"
+	"core_api/graph"
 	"core_api/graph/model"
 	"core_api/internal/repository"
 	"time"
@@ -59,7 +60,7 @@ func (r *queryResolver) Squad(ctx context.Context, id int32) (*model.Squad, erro
 	}, nil
 }
 
-// Query returns QueryResolver implementation.
-func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
+// Query returns graph.QueryResolver implementation.
+func (r *Resolver) Query() graph.QueryResolver { return &queryResolver{r} }
 
 type queryResolver struct{ *Resolver }
