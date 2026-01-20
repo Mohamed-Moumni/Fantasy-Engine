@@ -9,13 +9,12 @@ import (
 	"context"
 	"core_api/graph/model"
 	"core_api/internal/repository"
-	"pkg/database"
 	"time"
 )
 
 // User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
-	db := database.DB
+	db := r.DB
 
 	userRepository := repository.NewUserRepository(db)
 	user, err := userRepository.GetUserByID(id)
@@ -33,7 +32,7 @@ func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error
 
 // Squad is the resolver for the squad field.
 func (r *queryResolver) Squad(ctx context.Context, id int32) (*model.Squad, error) {
-	db := database.DB
+	db := r.DB
 
 	squadRepository := repository.NewSquadRepository(db)
 	squad, err := squadRepository.GetSquadByID(id)
@@ -58,7 +57,6 @@ func (r *queryResolver) Squad(ctx context.Context, id int32) (*model.Squad, erro
 		Name:    squad.Name,
 		Players: squadPlayersModel,
 	}, nil
-
 }
 
 // Query returns QueryResolver implementation.

@@ -30,9 +30,14 @@ func main() {
 	}
 	log.Printf("Config: %+v", config)
 
-	database.Init()
+	
+	db := database.Init()
+	
+	database.AutoMigrate(db)
 
-	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
+		DB: db,
+	}}))
 
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})

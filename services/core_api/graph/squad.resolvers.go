@@ -10,7 +10,6 @@ import (
 	"core_api/graph/model"
 	"core_api/internal/repository"
 	"core_api/internal/service"
-	"pkg/database"
 	"pkg/models"
 	"time"
 )
@@ -18,7 +17,7 @@ import (
 // CreateSquad is the resolver for the createSquad field.
 // CreateSquad is the resolver for the createSquad field.
 func (r *mutationResolver) CreateSquad(ctx context.Context, input model.CreateSquadInput) (*model.Squad, error) {
-	db := database.DB
+	db := r.DB
 	userId := "a7d64e79-d36d-4f3d-9e3a-9ae27adecef1"
 
 	squadService := service.NewSquadService(repository.NewUserRepository(db), repository.NewSquadRepository(db))
@@ -31,7 +30,7 @@ func (r *mutationResolver) CreateSquad(ctx context.Context, input model.CreateSq
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.CreateUserInput) (*model.User, error) {
-	db := database.DB
+	db := r.DB
 	user := models.User{
 		Email:            input.Email,
 		Username:         input.Username,

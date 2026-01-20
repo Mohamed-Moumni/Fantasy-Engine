@@ -85,3 +85,13 @@ type User struct {
 	Gender         string   `json:"gender"`
 	CreatedAt      string   `json:"createdAt"`
 }
+
+type UserRegistration struct {
+	Username        string `json:"username"`
+	Email           string `json:"email"`
+	Age             int32  `json:"age"`
+	Password        string `json:"password"`
+	ConfirmPassword string `json:"confirmPassword"`
+	Phone           string `json:"phone"`
+	Gender          string `json:"gender"`
+}
