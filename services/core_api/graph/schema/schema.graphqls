@@ -23,7 +23,9 @@ type Team {
 
 type Query {
   user(id: String!): User!
+  me: User!
   squad(id: Int!): Squad!
+  googleAuthUrl: String!
 }
 
 input CreateUserInput {
@@ -36,3 +38,11 @@ input CreateUserInput {
   gender: String!
 }
 
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+extend type Mutation {
+  login(code: String!): AuthPayload!
+}

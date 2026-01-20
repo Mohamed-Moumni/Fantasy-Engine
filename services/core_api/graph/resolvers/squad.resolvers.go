@@ -11,18 +11,21 @@ import (
 	"core_api/graph/model"
 	"core_api/internal/repository"
 	service "core_api/internal/service/squad"
+	"fmt"
 	"pkg/models"
 	"time"
 )
 
 // CreateSquad is the resolver for the createSquad field.
-// CreateSquad is the resolver for the createSquad field.
 func (r *mutationResolver) CreateSquad(ctx context.Context, input model.CreateSquadInput) (*model.Squad, error) {
 	db := r.DB
-	userId := "a7d64e79-d36d-4f3d-9e3a-9ae27adecef1"
 
+	userID, _ := ctx.Value("userID").(string)
+	if userID == "" {
+		return nil, fmt.Errorf("User Unauthorized")
+	}
 	squadService := service.NewSquadService(repository.NewUserRepository(db), repository.NewSquadRepository(db))
-	squad, err := squadService.CreateSquad(&input, userId)
+	squad, err := squadService.CreateSquad(ctx, &input)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +58,34 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.CreateUse
 	}, nil
 }
 
+// SubstitutePlayer is the resolver for the substitutePlayer field.
+func (r *mutationResolver) SubstitutePlayer(ctx context.Context, input model.SubstitutePlayerInput) (*model.Squad, error) {
+	db := r.DB
+
+	userID, _ := ctx.Value("userID").(string)
+	if userID == "" {
+		return nil, fmt.Errorf("User Unauthorized")
+	}
+
+	squadService := service.NewSquadService(repository.NewUserRepository(db), repository.NewSquadRepository(db))
+	squad, err := squadService.SubstitutePlayer(ctx, &input)
+	if err != nil {
+		return nil, err
+	}
+	return squad, nil
+}
+
 // Mutation returns graph.MutationResolver implementation.
 func (r *Resolver) Mutation() graph.MutationResolver { return &mutationResolver{r} }
 
 type mutationResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+/*
+	func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
+*/

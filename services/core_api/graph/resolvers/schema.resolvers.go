@@ -9,13 +9,62 @@ import (
 	"context"
 	"core_api/graph"
 	"core_api/graph/model"
+	"core_api/internal/auth"
 	"core_api/internal/repository"
+	"fmt"
+	"pkg/models"
 	"time"
+
+	"github.com/google/uuid"
 )
+
+// Login is the resolver for the login field.
+func (r *mutationResolver) Login(ctx context.Context, code string) (*model.AuthPayload, error) {
+	db := r.DB
+	googleUserInfo, err := auth.GetGoogleUserInfo(code)
+	if err != nil {
+		return nil, err
+	}
+
+	userRepository := repository.NewUserRepository(db)
+	user, _ := userRepository.GetUserByEmail(googleUserInfo.Email)
+	if user == nil {
+		user = &models.User{
+			Email:            googleUserInfo.Email,
+			Username:         googleUserInfo.Name,
+			Age:              0,
+			FavoriteTeamID:   0,
+			FavoritePlayerID: 0,
+			CountryID:        0,
+			Gender:           "M",
+			PasswordHash:     "",
+		}
+		userRepository.CreateUser(user)
+	}
+	token, err := auth.GenerateJWT(user.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &model.AuthPayload{
+		Token: token,
+		User: &model.User{
+			ID:       user.ID,
+			Email:    user.Email,
+			Username: user.Username,
+		},
+	}, nil
+}
 
 // User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
 	db := r.DB
+	userID, ok := ctx.Value("userID").(string)
+	if !ok {
+		return nil, fmt.Errorf("user ID not found in context")
+	}
+	if userID != id {
+		return nil, fmt.Errorf("unauthorized")
+	}
 
 	userRepository := repository.NewUserRepository(db)
 	user, err := userRepository.GetUserByID(id)
@@ -31,9 +80,34 @@ func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error
 	}, nil
 }
 
+// Me is the resolver for the me field.
+func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
+	db := r.DB
+	userID, _ := ctx.Value("userID").(string)
+	if userID == "" {
+		return nil, fmt.Errorf("Unauthorized")
+	}
+	userRepository := repository.NewUserRepository(db)
+	user, err := userRepository.GetUserByID(userID)
+	if err != nil {
+		return nil, err
+	}
+	return &model.User{
+		ID:        user.ID,
+		Email:     user.Email,
+		Username:  user.Username,
+		Age:       int32(user.Age),
+		CreatedAt: user.CreatedAt.Format(time.RFC3339),
+	}, nil
+}
+
 // Squad is the resolver for the squad field.
 func (r *queryResolver) Squad(ctx context.Context, id int32) (*model.Squad, error) {
 	db := r.DB
+	_, ok := ctx.Value("userID").(string)
+	if !ok {
+		return nil, fmt.Errorf("Unauthorized")
+	}
 
 	squadRepository := repository.NewSquadRepository(db)
 	squad, err := squadRepository.GetSquadByID(id)
@@ -58,6 +132,12 @@ func (r *queryResolver) Squad(ctx context.Context, id int32) (*model.Squad, erro
 		Name:    squad.Name,
 		Players: squadPlayersModel,
 	}, nil
+}
+
+// GoogleAuthURL is the resolver for the googleAuthUrl field.
+func (r *queryResolver) GoogleAuthURL(ctx context.Context) (string, error) {
+	state := uuid.New().String()
+	return auth.GetGoogleAuthURL(state), nil
 }
 
 // Query returns graph.QueryResolver implementation.
