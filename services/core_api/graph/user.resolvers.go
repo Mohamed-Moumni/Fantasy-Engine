@@ -9,7 +9,7 @@ import (
 	"context"
 	"core_api/graph/model"
 	"core_api/internal/repository"
-	"core_api/internal/service"
+	service "core_api/internal/service/user"
 )
 
 // RegisterUser is the resolver for the registerUser field.
@@ -18,13 +18,13 @@ func (r *mutationResolver) RegisterUser(ctx context.Context, input model.UserReg
 
 	userService := service.NewUserService(repository.NewUserRepository(db))
 	registerUserValidator := &service.CreateUserValidation{
-		Username: input.Username,
-		Email: input.Email,
-		Gender: input.Gender,
-		Password: input.Password,
+		Username:        input.Username,
+		Email:           input.Email,
+		Gender:          input.Gender,
+		Password:        input.Password,
 		ConfirmPassword: input.ConfirmPassword,
-		Age: int(input.Age),
-		Phone: input.Phone,
+		Age:             int(input.Age),
+		Phone:           input.Phone,
 	}
 	if err := service.ValidatUserRegistartion(*registerUserValidator); err != nil {
 		return nil, err

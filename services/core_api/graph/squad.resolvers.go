@@ -9,7 +9,7 @@ import (
 	"context"
 	"core_api/graph/model"
 	"core_api/internal/repository"
-	"core_api/internal/service"
+	service "core_api/internal/service/squad"
 	"pkg/models"
 	"time"
 )
