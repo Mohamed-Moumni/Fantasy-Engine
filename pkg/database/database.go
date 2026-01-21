@@ -12,14 +12,13 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-var DB *gorm.DB
 
-func Init() {
+func Init() *gorm.DB {
 	db, err := NewConnection(os.Getenv("DATABASE_URL"))
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
-	DB = db
+	return db
 }
 
 

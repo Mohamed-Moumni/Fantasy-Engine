@@ -2,6 +2,11 @@
 
 package model
 
+type AuthPayload struct {
+	Token string `json:"token"`
+	User  *User  `json:"user"`
+}
+
 type Country struct {
 	ID   int32  `json:"id"`
 	Name string `json:"name"`
@@ -67,6 +72,11 @@ type SquadPlayer struct {
 	PositionOrder int32   `json:"positionOrder"`
 }
 
+type SubstitutePlayerInput struct {
+	SquadPlayerIDToSubstitute int32 `json:"squadPlayerIdToSubstitute"`
+	SquadPlayerIDToReplace    int32 `json:"squadPlayerIdToReplace"`
+}
+
 type Team struct {
 	ID      int32    `json:"id"`
 	Name    string   `json:"name"`
@@ -84,4 +94,14 @@ type User struct {
 	Country        *Country `json:"country"`
 	Gender         string   `json:"gender"`
 	CreatedAt      string   `json:"createdAt"`
+}
+
+type UserRegistration struct {
+	Username        string `json:"username"`
+	Email           string `json:"email"`
+	Age             int32  `json:"age"`
+	Password        string `json:"password"`
+	ConfirmPassword string `json:"confirmPassword"`
+	Phone           string `json:"phone"`
+	Gender          string `json:"gender"`
 }

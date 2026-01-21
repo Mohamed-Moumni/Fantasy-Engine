@@ -7,13 +7,15 @@ type User struct {
 	Email            string    `gorm:"not null;unique"`
 	Username         string    `gorm:"not null;unique"`
 	Age              uint      `gorm:"not null"`
-	FavoriteTeamID   uint      `gorm:"not null"`
-	FavoritePlayerID uint      `gorm:"not null"`
+	FavoriteTeamID   uint      `gorm:"default:null"`
+	FavoritePlayerID uint      `gorm:"default:null"`
 	SquadID          *uint     `gorm:"default:null"`
 	Squad            *Squad    `gorm:"foreignKey:SquadID"`
-	CountryID        uint      `gorm:"not null"`
+	CountryID        uint      `gorm:"default:null"`
 	Gender           string    `gorm:"not null;type:varchar(255);check:gender IN ('M', 'F')"`
-	PasswordHash     string    `gorm:"not null"`
+	PhoneNumber      string    `gorm:"size:20;not null;uniqueIndex"`
+	PasswordHash     string    `gorm:"default:null"`
+	PasswordActived  bool      `gorm:"not null;default:false"`
 	CreatedAt        time.Time `gorm:"autoCreateTime"`
 	UpdatedAt        time.Time `gorm:"autoUpdateTime"`
 }

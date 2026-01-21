@@ -2,37 +2,47 @@ package main
 
 import (
 	"core_api/graph"
+	"core_api/internal/auth"
 	"core_api/internal/config"
-	"pkg/database"
 	"log"
 	"net/http"
 	"os"
+	"pkg/database"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/joho/godotenv"
 	"github.com/vektah/gqlparser/v2/ast"
+	"github.com/rs/cors"
 )
 
 const defaultPort = "8080"
 
 func main() {
 	port := os.Getenv("PORT")
+	godotenv.Load(".core_api.env")
+
 	if port == "" {
 		port = defaultPort
 	}
 
-	config, err := config.LoadConfig()
+	auth.InitGoogleAuth()
+	_, err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
 	}
-	log.Printf("Config: %+v", config)
 
-	database.Init()
+	
+	db := database.Init()
+	
+	database.AutoMigrate(db)
 
-	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
+		DB: db,
+	}}))
 
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})
@@ -45,9 +55,20 @@ func main() {
 		Cache: lru.New[string](100),
 	})
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	mux := http.NewServeMux()
+	mux.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	mux.Handle("/auth/google/callback", http.HandlerFunc(auth.GoogleCallback))
+	mux.Handle("/query", auth.AuthMiddleware()(srv))
+
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},  // Allow all origins
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		AllowedHeaders:   []string{"*"},  // Allow all headers
+		AllowCredentials: false,          // Must be false when using "*"
+	})
+
+	handler := c.Handler(mux)
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, handler))
 }

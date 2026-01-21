@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"core_api/graph/model"
 	"core_api/internal/repository"
 	"fmt"
@@ -17,7 +18,11 @@ func NewSquadService(userRepository *repository.UserRepository, squadRepository 
 	return &SquadService{userRepository: userRepository, squadRepository: squadRepository, squadValidator: NewSquadValidator(100.00, 15)}
 }
 
-func (ss *SquadService) createSquadWithPlayers(squad *model.CreateSquadInput, userId string) (*model.Squad, error) {
+func (ss *SquadService) createSquadWithPlayers(ctx context.Context, squad *model.CreateSquadInput) (*model.Squad, error) {
+	userId, ok := ctx.Value("userID").(string)
+	if !ok {
+		return nil, fmt.Errorf("User Unauthorized")
+	}
 	squadModel := models.Squad{Name: squad.Name}
 	err := ss.squadRepository.CreateSquad(&squadModel, userId)
 	if err != nil {
@@ -67,9 +72,10 @@ func (ss *SquadService) createSquadWithPlayers(squad *model.CreateSquadInput, us
 	}, nil
 }
 
-func (ss *SquadService) CreateSquad(squad *model.CreateSquadInput, userId string) (*model.Squad, error) {
-	if err := ss.squadValidator.Validate(squad); err != nil {
-		return nil, fmt.Errorf("failed to validate squad: %w", err)
+func (ss *SquadService) CreateSquad(ctx context.Context, squad *model.CreateSquadInput) (*model.Squad, error) {
+	userId, ok := ctx.Value("userID").(string)
+	if !ok {
+		return nil, fmt.Errorf("User Unauthorized")
 	}
 
 	user, err := ss.userRepository.GetUserByID(userId)
@@ -79,5 +85,42 @@ func (ss *SquadService) CreateSquad(squad *model.CreateSquadInput, userId string
 	if user.SquadID != nil {
 		return nil, ErrSquadAlreadyExists // Fix: use the error directly, not fmt.Errorf with two args
 	}
-	return ss.createSquadWithPlayers(squad, userId)
+	return ss.createSquadWithPlayers(ctx, squad)
+}
+
+func (ss *SquadService) SubstitutePlayer(ctx context.Context, input *model.SubstitutePlayerInput) (*model.Squad, error) {
+
+	// check if the user has a squad
+	// check if the player to substitute and the player to replace are in the same squad
+	// implement the logic to substitute the player
+
+	// user, err := ss.userRepository.GetUserByID(userId)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("failed to get user by id: %w", err)
+	// }
+	// if user.SquadID == nil {
+	// 	return nil, ErrSquadNotFound
+	// }
+
+	// squadPlayers, err := ss.squadRepository.GetSquadPlayersBySquadID(int32(*user.SquadID))
+	// if err != nil {
+	// 	return nil, fmt.Errorf("failed to get squad players by squad id: %w", err)
+	// }
+
+	// squadPlayerToSubstitute := models.SquadPlayer{}
+	// squadPlayerToReplace := models.SquadPlayer{}
+
+	// for _, squadPlayer := range squadPlayers {
+	// 	if squadPlayer.ID == uint(input.SquadPlayerIDToSubstitute) {
+	// 		squadPlayerToSubstitute = squadPlayer
+	// 	}
+	// 	if squadPlayer.ID == uint(input.SquadPlayerIDToSubstitute) {
+	// 		squadPlayerToReplace = squadPlayer
+	// 	}
+	// }
+
+	// if squadPlayerToSubstitute.ID == 0 || squadPlayerToReplace.ID == 0 {
+	// 	return nil, ErrSquadPlayerNotFound
+	// }
+	return nil, nil
 }
