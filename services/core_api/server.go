@@ -2,6 +2,7 @@ package main
 
 import (
 	"core_api/graph"
+	"core_api/graph/resolvers"
 	"core_api/internal/auth"
 	"core_api/internal/config"
 	"log"
@@ -15,8 +16,8 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/joho/godotenv"
-	"github.com/vektah/gqlparser/v2/ast"
 	"github.com/rs/cors"
+	"github.com/vektah/gqlparser/v2/ast"
 )
 
 const defaultPort = "8080"
@@ -38,9 +39,11 @@ func main() {
 	
 	db := database.Init()
 	
-	database.AutoMigrate(db)
+	// database.AutoMigrate(db)
 
-	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
+	// os.Exit(1)
+
+	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &resolvers.Resolver{
 		DB: db,
 	}}))
 

@@ -40,6 +40,26 @@ type CreateUserInput struct {
 	Gender           string `json:"gender"`
 }
 
+type GameMatch struct {
+	Round   int32    `json:"round"`
+	Matches []*Match `json:"Matches"`
+}
+
+type GameWeek struct {
+	Round int32 `json:"round"`
+}
+
+type Match struct {
+	Date          string    `json:"date"`
+	Time          string    `json:"time"`
+	Gameweek      *GameWeek `json:"gameweek"`
+	HomeTeam      *Team     `json:"homeTeam"`
+	AwayTeam      *Team     `json:"awayTeam"`
+	Completed     bool      `json:"completed"`
+	HomeTeamScore int32     `json:"HomeTeamScore"`
+	AwayTeamScore int32     `json:"AwayTeamScore"`
+}
+
 type Mutation struct {
 }
 

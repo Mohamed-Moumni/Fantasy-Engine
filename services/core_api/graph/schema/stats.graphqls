@@ -1,0 +1,26 @@
+scalar DateTime
+scalar Date
+
+type GameWeek {
+    round: Int!
+}
+
+type Match {
+    date: Date!
+    time: DateTime!
+    gameweek: GameWeek!
+    homeTeam: Team!
+    awayTeam: Team!
+    completed: Boolean!
+    HomeTeamScore: Int!
+    AwayTeamScore: Int!
+}
+
+type GameMatch {
+    round: Int!
+    Matches: [Match!]!
+}
+
+extend type Query {
+    getMatches: [GameMatch!]!
+}

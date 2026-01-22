@@ -58,6 +58,26 @@ type ComplexityRoot struct {
 		Slug func(childComplexity int) int
 	}
 
+	GameMatch struct {
+		Matches func(childComplexity int) int
+		Round   func(childComplexity int) int
+	}
+
+	GameWeek struct {
+		Round func(childComplexity int) int
+	}
+
+	Match struct {
+		AwayTeam      func(childComplexity int) int
+		AwayTeamScore func(childComplexity int) int
+		Completed     func(childComplexity int) int
+		Date          func(childComplexity int) int
+		Gameweek      func(childComplexity int) int
+		HomeTeam      func(childComplexity int) int
+		HomeTeamScore func(childComplexity int) int
+		Time          func(childComplexity int) int
+	}
+
 	Mutation struct {
 		CreateSquad      func(childComplexity int, input model.CreateSquadInput) int
 		CreateUser       func(childComplexity int, input model.CreateUserInput) int
@@ -74,6 +94,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		GetMatches    func(childComplexity int) int
 		GoogleAuthURL func(childComplexity int) int
 		Me            func(childComplexity int) int
 		Squad         func(childComplexity int, id int32) int
@@ -131,6 +152,7 @@ type QueryResolver interface {
 	Me(ctx context.Context) (*model.User, error)
 	Squad(ctx context.Context, id int32) (*model.Squad, error)
 	GoogleAuthURL(ctx context.Context) (string, error)
+	GetMatches(ctx context.Context) ([]*model.GameMatch, error)
 }
 
 type executableSchema struct {
@@ -183,6 +205,75 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Country.Slug(childComplexity), true
+
+	case "GameMatch.Matches":
+		if e.complexity.GameMatch.Matches == nil {
+			break
+		}
+
+		return e.complexity.GameMatch.Matches(childComplexity), true
+	case "GameMatch.round":
+		if e.complexity.GameMatch.Round == nil {
+			break
+		}
+
+		return e.complexity.GameMatch.Round(childComplexity), true
+
+	case "GameWeek.round":
+		if e.complexity.GameWeek.Round == nil {
+			break
+		}
+
+		return e.complexity.GameWeek.Round(childComplexity), true
+
+	case "Match.awayTeam":
+		if e.complexity.Match.AwayTeam == nil {
+			break
+		}
+
+		return e.complexity.Match.AwayTeam(childComplexity), true
+	case "Match.AwayTeamScore":
+		if e.complexity.Match.AwayTeamScore == nil {
+			break
+		}
+
+		return e.complexity.Match.AwayTeamScore(childComplexity), true
+	case "Match.completed":
+		if e.complexity.Match.Completed == nil {
+			break
+		}
+
+		return e.complexity.Match.Completed(childComplexity), true
+	case "Match.date":
+		if e.complexity.Match.Date == nil {
+			break
+		}
+
+		return e.complexity.Match.Date(childComplexity), true
+	case "Match.gameweek":
+		if e.complexity.Match.Gameweek == nil {
+			break
+		}
+
+		return e.complexity.Match.Gameweek(childComplexity), true
+	case "Match.homeTeam":
+		if e.complexity.Match.HomeTeam == nil {
+			break
+		}
+
+		return e.complexity.Match.HomeTeam(childComplexity), true
+	case "Match.HomeTeamScore":
+		if e.complexity.Match.HomeTeamScore == nil {
+			break
+		}
+
+		return e.complexity.Match.HomeTeamScore(childComplexity), true
+	case "Match.time":
+		if e.complexity.Match.Time == nil {
+			break
+		}
+
+		return e.complexity.Match.Time(childComplexity), true
 
 	case "Mutation.createSquad":
 		if e.complexity.Mutation.CreateSquad == nil {
@@ -265,6 +356,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Player.Position(childComplexity), true
 
+	case "Query.getMatches":
+		if e.complexity.Query.GetMatches == nil {
+			break
+		}
+
+		return e.complexity.Query.GetMatches(childComplexity), true
 	case "Query.googleAuthUrl":
 		if e.complexity.Query.GoogleAuthURL == nil {
 			break
@@ -569,7 +666,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 	return introspection.WrapTypeFromDef(ec.Schema(), ec.Schema().Types[name]), nil
 }
 
-//go:embed "schema/player.graphqls" "schema/schema.graphqls" "schema/squad.graphqls" "schema/user.graphqls"
+//go:embed "schema/player.graphqls" "schema/schema.graphqls" "schema/squad.graphqls" "schema/stats.graphqls" "schema/user.graphqls"
 var sourcesFS embed.FS
 
 func sourceData(filename string) string {
@@ -584,6 +681,7 @@ var sources = []*ast.Source{
 	{Name: "schema/player.graphqls", Input: sourceData("schema/player.graphqls"), BuiltIn: false},
 	{Name: "schema/schema.graphqls", Input: sourceData("schema/schema.graphqls"), BuiltIn: false},
 	{Name: "schema/squad.graphqls", Input: sourceData("schema/squad.graphqls"), BuiltIn: false},
+	{Name: "schema/stats.graphqls", Input: sourceData("schema/stats.graphqls"), BuiltIn: false},
 	{Name: "schema/user.graphqls", Input: sourceData("schema/user.graphqls"), BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -894,6 +992,363 @@ func (ec *executionContext) fieldContext_Country_slug(_ context.Context, field g
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GameMatch_round(ctx context.Context, field graphql.CollectedField, obj *model.GameMatch) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_GameMatch_round,
+		func(ctx context.Context) (any, error) {
+			return obj.Round, nil
+		},
+		nil,
+		ec.marshalNInt2int32,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_GameMatch_round(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GameMatch",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GameMatch_Matches(ctx context.Context, field graphql.CollectedField, obj *model.GameMatch) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_GameMatch_Matches,
+		func(ctx context.Context) (any, error) {
+			return obj.Matches, nil
+		},
+		nil,
+		ec.marshalNMatch2ᚕᚖcore_apiᚋgraphᚋmodelᚐMatchᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_GameMatch_Matches(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GameMatch",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "date":
+				return ec.fieldContext_Match_date(ctx, field)
+			case "time":
+				return ec.fieldContext_Match_time(ctx, field)
+			case "gameweek":
+				return ec.fieldContext_Match_gameweek(ctx, field)
+			case "homeTeam":
+				return ec.fieldContext_Match_homeTeam(ctx, field)
+			case "awayTeam":
+				return ec.fieldContext_Match_awayTeam(ctx, field)
+			case "completed":
+				return ec.fieldContext_Match_completed(ctx, field)
+			case "HomeTeamScore":
+				return ec.fieldContext_Match_HomeTeamScore(ctx, field)
+			case "AwayTeamScore":
+				return ec.fieldContext_Match_AwayTeamScore(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Match", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GameWeek_round(ctx context.Context, field graphql.CollectedField, obj *model.GameWeek) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_GameWeek_round,
+		func(ctx context.Context) (any, error) {
+			return obj.Round, nil
+		},
+		nil,
+		ec.marshalNInt2int32,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_GameWeek_round(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GameWeek",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Match_date(ctx context.Context, field graphql.CollectedField, obj *model.Match) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Match_date,
+		func(ctx context.Context) (any, error) {
+			return obj.Date, nil
+		},
+		nil,
+		ec.marshalNDate2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Match_date(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Match",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Date does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Match_time(ctx context.Context, field graphql.CollectedField, obj *model.Match) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Match_time,
+		func(ctx context.Context) (any, error) {
+			return obj.Time, nil
+		},
+		nil,
+		ec.marshalNDateTime2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Match_time(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Match",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type DateTime does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Match_gameweek(ctx context.Context, field graphql.CollectedField, obj *model.Match) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Match_gameweek,
+		func(ctx context.Context) (any, error) {
+			return obj.Gameweek, nil
+		},
+		nil,
+		ec.marshalNGameWeek2ᚖcore_apiᚋgraphᚋmodelᚐGameWeek,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Match_gameweek(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Match",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "round":
+				return ec.fieldContext_GameWeek_round(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type GameWeek", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Match_homeTeam(ctx context.Context, field graphql.CollectedField, obj *model.Match) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Match_homeTeam,
+		func(ctx context.Context) (any, error) {
+			return obj.HomeTeam, nil
+		},
+		nil,
+		ec.marshalNTeam2ᚖcore_apiᚋgraphᚋmodelᚐTeam,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Match_homeTeam(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Match",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Team_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Team_name(ctx, field)
+			case "country":
+				return ec.fieldContext_Team_country(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Team", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Match_awayTeam(ctx context.Context, field graphql.CollectedField, obj *model.Match) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Match_awayTeam,
+		func(ctx context.Context) (any, error) {
+			return obj.AwayTeam, nil
+		},
+		nil,
+		ec.marshalNTeam2ᚖcore_apiᚋgraphᚋmodelᚐTeam,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Match_awayTeam(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Match",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Team_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Team_name(ctx, field)
+			case "country":
+				return ec.fieldContext_Team_country(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Team", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Match_completed(ctx context.Context, field graphql.CollectedField, obj *model.Match) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Match_completed,
+		func(ctx context.Context) (any, error) {
+			return obj.Completed, nil
+		},
+		nil,
+		ec.marshalNBoolean2bool,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Match_completed(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Match",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Match_HomeTeamScore(ctx context.Context, field graphql.CollectedField, obj *model.Match) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Match_HomeTeamScore,
+		func(ctx context.Context) (any, error) {
+			return obj.HomeTeamScore, nil
+		},
+		nil,
+		ec.marshalNInt2int32,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Match_HomeTeamScore(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Match",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Match_AwayTeamScore(ctx context.Context, field graphql.CollectedField, obj *model.Match) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Match_AwayTeamScore,
+		func(ctx context.Context) (any, error) {
+			return obj.AwayTeamScore, nil
+		},
+		nil,
+		ec.marshalNInt2int32,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Match_AwayTeamScore(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Match",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -1481,6 +1936,41 @@ func (ec *executionContext) fieldContext_Query_googleAuthUrl(_ context.Context, 
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_getMatches(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_getMatches,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Query().GetMatches(ctx)
+		},
+		nil,
+		ec.marshalNGameMatch2ᚕᚖcore_apiᚋgraphᚋmodelᚐGameMatchᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_getMatches(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "round":
+				return ec.fieldContext_GameMatch_round(ctx, field)
+			case "Matches":
+				return ec.fieldContext_GameMatch_Matches(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type GameMatch", field.Name)
 		},
 	}
 	return fc, nil
@@ -4258,6 +4748,163 @@ func (ec *executionContext) _Country(ctx context.Context, sel ast.SelectionSet, 
 	return out
 }
 
+var gameMatchImplementors = []string{"GameMatch"}
+
+func (ec *executionContext) _GameMatch(ctx context.Context, sel ast.SelectionSet, obj *model.GameMatch) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, gameMatchImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("GameMatch")
+		case "round":
+			out.Values[i] = ec._GameMatch_round(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "Matches":
+			out.Values[i] = ec._GameMatch_Matches(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var gameWeekImplementors = []string{"GameWeek"}
+
+func (ec *executionContext) _GameWeek(ctx context.Context, sel ast.SelectionSet, obj *model.GameWeek) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, gameWeekImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("GameWeek")
+		case "round":
+			out.Values[i] = ec._GameWeek_round(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var matchImplementors = []string{"Match"}
+
+func (ec *executionContext) _Match(ctx context.Context, sel ast.SelectionSet, obj *model.Match) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, matchImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Match")
+		case "date":
+			out.Values[i] = ec._Match_date(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "time":
+			out.Values[i] = ec._Match_time(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "gameweek":
+			out.Values[i] = ec._Match_gameweek(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "homeTeam":
+			out.Values[i] = ec._Match_homeTeam(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "awayTeam":
+			out.Values[i] = ec._Match_awayTeam(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "completed":
+			out.Values[i] = ec._Match_completed(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "HomeTeamScore":
+			out.Values[i] = ec._Match_HomeTeamScore(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "AwayTeamScore":
+			out.Values[i] = ec._Match_AwayTeamScore(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -4484,6 +5131,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_googleAuthUrl(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "getMatches":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getMatches(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -5195,6 +5864,38 @@ func (ec *executionContext) unmarshalNCreateUserInput2core_apiᚋgraphᚋmodel�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNDate2string(ctx context.Context, v any) (string, error) {
+	res, err := graphql.UnmarshalString(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNDate2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	_ = sel
+	res := graphql.MarshalString(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNDateTime2string(ctx context.Context, v any) (string, error) {
+	res, err := graphql.UnmarshalString(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNDateTime2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	_ = sel
+	res := graphql.MarshalString(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
 func (ec *executionContext) unmarshalNFloat2float64(ctx context.Context, v any) (float64, error) {
 	res, err := graphql.UnmarshalFloatContext(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -5209,6 +5910,70 @@ func (ec *executionContext) marshalNFloat2float64(ctx context.Context, sel ast.S
 		}
 	}
 	return graphql.WrapContextMarshaler(ctx, res)
+}
+
+func (ec *executionContext) marshalNGameMatch2ᚕᚖcore_apiᚋgraphᚋmodelᚐGameMatchᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.GameMatch) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNGameMatch2ᚖcore_apiᚋgraphᚋmodelᚐGameMatch(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNGameMatch2ᚖcore_apiᚋgraphᚋmodelᚐGameMatch(ctx context.Context, sel ast.SelectionSet, v *model.GameMatch) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._GameMatch(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNGameWeek2ᚖcore_apiᚋgraphᚋmodelᚐGameWeek(ctx context.Context, sel ast.SelectionSet, v *model.GameWeek) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._GameWeek(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v any) (string, error) {
@@ -5241,6 +6006,60 @@ func (ec *executionContext) marshalNInt2int32(ctx context.Context, sel ast.Selec
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNMatch2ᚕᚖcore_apiᚋgraphᚋmodelᚐMatchᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Match) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNMatch2ᚖcore_apiᚋgraphᚋmodelᚐMatch(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNMatch2ᚖcore_apiᚋgraphᚋmodelᚐMatch(ctx context.Context, sel ast.SelectionSet, v *model.Match) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Match(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNPlayer2ᚖcore_apiᚋgraphᚋmodelᚐPlayer(ctx context.Context, sel ast.SelectionSet, v *model.Player) graphql.Marshaler {
