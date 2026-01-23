@@ -16,6 +16,19 @@ type Match {
     AwayTeamScore: Int!
 }
 
+type Table {
+    team: Team
+    position: Int!
+    played: Int!
+    wins: Int!
+    losses: Int!
+    scoresFor: Int!
+    scoresAgainst: Int!
+    draws: Int!
+    points: Int!
+    scoreDiffFormatted: Int!
+}
+
 type GameMatch {
     round: Int!
     Matches: [Match!]!
@@ -23,4 +36,5 @@ type GameMatch {
 
 extend type Query {
     getMatches: [GameMatch!]!
+    getTables: [Table!]!
 }

@@ -20,3 +20,10 @@ func (sr *StatsRepository) GetGameWeeks(gameWeeks *[]models.GameWeek) error {
 	}
 	return nil
 }
+
+func (sr *StatsRepository) GetTables(tables *[]models.Table) error {
+	if err := sr.db.Preload("Team").Find(&tables).Error; err != nil {
+		return err
+	}
+	return nil
+}

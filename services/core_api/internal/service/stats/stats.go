@@ -50,6 +50,32 @@ func (ss *StatsService) GetMaches() ([]*model.GameMatch, error) {
 	return gameweekMatches, nil
 }
 
+func (ss *StatsService) GetTable() ([]*model.Table, error) {
+	var tables []models.Table
+
+	if err := ss.statsRepository.GetTables(&tables); err != nil {
+		return nil, err
+	}
+
+	leagueTable := make([]*model.Table, 0, len(tables))
+	for _, table := range tables {
+		table := model.Table{
+			Team:               mapTeam(table.Team),
+			Position:           int32(table.Position),
+			Played:             int32(table.Played),
+			Wins:               int32(table.Wins),
+			Losses:             int32(table.Losses),
+			ScoresFor:          int32(table.ScoresFor),
+			ScoresAgainst:      int32(table.ScoresAgainst),
+			Draws:              int32(table.Draws),
+			Points:             int32(table.Points),
+			ScoreDiffFormatted: int32(table.ScoreDiffFormatted),
+		}
+		leagueTable = append(leagueTable, &table)
+	}
+	return leagueTable, nil
+}
+
 func mapTeam(t models.Team) *model.Team {
 	return &model.Team{
 		ID:   int32(t.ID),

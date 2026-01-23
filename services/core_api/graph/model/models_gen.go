@@ -97,6 +97,19 @@ type SubstitutePlayerInput struct {
 	SquadPlayerIDToReplace    int32 `json:"squadPlayerIdToReplace"`
 }
 
+type Table struct {
+	Team               *Team `json:"team,omitempty"`
+	Position           int32 `json:"position"`
+	Played             int32 `json:"played"`
+	Wins               int32 `json:"wins"`
+	Losses             int32 `json:"losses"`
+	ScoresFor          int32 `json:"scoresFor"`
+	ScoresAgainst      int32 `json:"scoresAgainst"`
+	Draws              int32 `json:"draws"`
+	Points             int32 `json:"points"`
+	ScoreDiffFormatted int32 `json:"scoreDiffFormatted"`
+}
+
 type Team struct {
 	ID      int32    `json:"id"`
 	Name    string   `json:"name"`

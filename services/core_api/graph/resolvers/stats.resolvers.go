@@ -20,3 +20,12 @@ func (r *queryResolver) GetMatches(ctx context.Context) ([]*model.GameMatch, err
 	statsService := service.NewStatsService(statsRepository)
 	return statsService.GetMaches()
 }
+
+// GetTables is the resolver for the getTables field.
+func (r *queryResolver) GetTables(ctx context.Context) ([]*model.Table, error) {
+	db := r.DB
+
+	statsRepository := repository.NewStatsRepository(db)
+	statsService := service.NewStatsService(statsRepository)
+	return statsService.GetTable()
+}
